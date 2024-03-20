@@ -2,6 +2,7 @@ package com.pi.projet.ServiceImp;
 
 import com.pi.projet.DTO.RequestProjet;
 import com.pi.projet.DTO.ResponseProjet;
+import com.pi.projet.FeignClients.User;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.entities.Category;
 import com.pi.projet.entities.ProjectStatus;
@@ -24,12 +25,21 @@ public class ProjetServiceImp implements ProjetService {
 
     private final ProjetRepo projetRepo ;
     private final CategoryRepo categoryRepo;
+    private final User user ;
+
 
 
     @Override
     public ResponseProjet createProject(RequestProjet requestProjet) {
+
+
         Projet projet=this.mapDTOToModel(requestProjet);
-        return this.mapModelToDTO(projetRepo.save(projet));
+        Long idUser = user.monProfil();
+        if(idUser!=null){
+        projet.setCreatorId(idUser);
+        return this.mapModelToDTO(projetRepo.save(projet));}
+        else
+            return null;
 
     }
 
@@ -47,7 +57,6 @@ public class ProjetServiceImp implements ProjetService {
         return category.map(value -> Projet.builder()
                 .title(requestProjet.getTitle())
                 .description(requestProjet.getDescription())
-                .creatorId(requestProjet.getCreatorId())
                 .category(value)
                 .status(ProjectStatus.OPEN)
                 .build()).orElse(null);

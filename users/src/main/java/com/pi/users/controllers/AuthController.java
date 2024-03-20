@@ -35,7 +35,7 @@ public class AuthController {
     }
 
     @GetMapping("/mon-profil")
-    public ResponseEntity<?> monProfil() {
+    public Long monProfil() {
 
        // récupèrer l'objet Authentication qui contient des informations sur l'utilisateur authentifié.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -45,11 +45,9 @@ public class AuthController {
             User user = (User) authentication.getPrincipal();
             Long userId = user.getIdUser();
 
-            return ResponseEntity.ok().body(userId);
-        } else {
-
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Utilisateur non authentifié");
+            return userId;
         }
+        return null ;
     }
 
 }
