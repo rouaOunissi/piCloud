@@ -6,20 +6,31 @@ import com.pi.projet.Services.CategoryService;
 import com.pi.projet.repositories.CategoryRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/projets")
+@RequestMapping("/api/v1/projets/category")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService ;
 
-    @PostMapping("/category")
-    public ResponseEntity<String> createProject(@RequestBody String categoryName) {
+    @PostMapping
+    public ResponseEntity<String> createCategory( String categoryName) {
      return categoryService.createCategory(categoryName);
     }
+
+    @GetMapping
+    public ResponseEntity<List<String>> getAllCategories(){
+    List<String> categories = categoryService.getAllCategories();
+    return ResponseEntity.ok(categories);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<String> updateCategory(@PathVariable("id") Long id,String catName){
+        return ResponseEntity.ok(categoryService.updateCategory(id,catName));
+    }
+
 }

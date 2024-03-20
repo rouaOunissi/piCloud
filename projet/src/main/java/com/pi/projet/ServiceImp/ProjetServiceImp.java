@@ -10,9 +10,12 @@ import com.pi.projet.repositories.CategoryRepo;
 import com.pi.projet.repositories.ProjetRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,15 @@ public class ProjetServiceImp implements ProjetService {
     public ResponseProjet createProject(RequestProjet requestProjet) {
         Projet projet=this.mapDTOToModel(requestProjet);
         return this.mapModelToDTO(projetRepo.save(projet));
+
+    }
+
+    @Override
+    public ResponseEntity<List<ResponseProjet>> findProjetByCategory_Id(Long id) {
+        List<Projet> projets = projetRepo.findProjetByCategory_Id(id);
+        List<ResponseProjet> responseProjets = projets.stream().map(this::mapModelToDTO).toList();
+
+        return ResponseEntity.ok(responseProjets);
     }
 
 
