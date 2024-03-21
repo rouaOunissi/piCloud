@@ -1,6 +1,7 @@
 package com.pi.users.controllers;
 
 import com.pi.users.entities.User;
+import com.pi.users.jwt.JwtService;
 import com.pi.users.servicesImpl.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,20 +35,46 @@ public class AuthController {
         return ResponseEntity.ok(authService.authentificate(request));
     }
 
-    @GetMapping("/mon-profil")
-    public Long monProfil() {
 
-       // récupèrer l'objet Authentication qui contient des informations sur l'utilisateur authentifié.
+ /*   @GetMapping("/mon-profil")
+    public ResponseEntity<UserProfile> monProfil() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
-           // extraire l'utilisateur authentifié de l'objet Authentication
             User user = (User) authentication.getPrincipal();
             Long userId = user.getIdUser();
+            UserProfile profile = new UserProfile(userId);
 
-            return userId;
+            return ResponseEntity.ok(profile);
         }
-        return null ;
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }*/
+
+    @GetMapping("/mon-profil")
+    public ResponseEntity<?> monProfil() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            Object principal = authentication.getPrincipal();
+
+            if (principal instanceof User) {
+                User user = (User) principal;
+                Long userId = user.getIdUser();
+                UserProfile profile = new UserProfile(userId);
+                return ResponseEntity.ok(profile);
+            } else {
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Erreur : L'objet principal de l'authentification n'est pas une instance de User.");
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("Accès refusé : Vous devez être connecté pour accéder à cette ressource.");
     }
+
+
+
+
 
 }

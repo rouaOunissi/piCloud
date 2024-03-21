@@ -1,9 +1,13 @@
 server:
   port: 8222
 
+jwt:
+  secret: "Z4h5/H39t6gdMbJ0pAfce1EUn0JANtsYJWL9NLxjnGBzh0UZoh5BszZNPoKQoWS2"
+
 spring:
   application:
     name: gateway
+
   cloud:
     gateway:
       mvc:
@@ -32,6 +36,7 @@ spring:
             uri: http://localhost:8050
             predicates:
               - Path=/api/v1/projets/**
+
 
 
 

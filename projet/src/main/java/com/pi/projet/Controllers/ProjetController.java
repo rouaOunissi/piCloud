@@ -5,6 +5,7 @@ import com.pi.projet.DTO.ResponseProjet;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.entities.Projet;
 import com.pi.projet.repositories.ProjetRepo;
+import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +21,13 @@ public class ProjetController {
     private final ProjetService projetService;
 
     @PostMapping
-    public ResponseEntity<?> createProject(@RequestBody RequestProjet project) {
-        ResponseProjet createdProject = projetService.createProject(project);
-        if(createdProject!=null)
-        return ResponseEntity.ok(createdProject);
+    public ResponseEntity<?> createProject(@RequestBody RequestProjet project, @RequestHeader("Authorization") String bearerToken) {
+        ResponseProjet createdProject = projetService.createProject(project, bearerToken);
+        if (createdProject != null)
+            return ResponseEntity.ok(createdProject);
         else {
-            String s = "can t create project ";
-            return ResponseEntity.ok(s);
+            String s = "Cannot create project";
+            return ResponseEntity.badRequest().body(s);
         }
     }
 

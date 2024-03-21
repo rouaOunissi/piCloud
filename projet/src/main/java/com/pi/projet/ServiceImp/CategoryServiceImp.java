@@ -1,5 +1,6 @@
 package com.pi.projet.ServiceImp;
 
+import com.pi.projet.FeignClients.UserProfile;
 import com.pi.projet.Services.CategoryService;
 import com.pi.projet.entities.Category;
 import com.pi.projet.repositories.CategoryRepo;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class CategoryServiceImp implements CategoryService {
 
     private final CategoryRepo categoryRepo ;
+
 
     @Override
     public ResponseEntity<String> createCategory(String categoryName) {

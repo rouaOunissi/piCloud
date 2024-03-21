@@ -3,6 +3,7 @@ package com.pi.projet.ServiceImp;
 import com.pi.projet.DTO.RequestProjet;
 import com.pi.projet.DTO.ResponseProjet;
 import com.pi.projet.FeignClients.User;
+import com.pi.projet.FeignClients.UserProfile;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.entities.Category;
 import com.pi.projet.entities.ProjectStatus;
@@ -10,6 +11,7 @@ import com.pi.projet.entities.Projet;
 import com.pi.projet.repositories.CategoryRepo;
 import com.pi.projet.repositories.ProjetRepo;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,14 +31,16 @@ public class ProjetServiceImp implements ProjetService {
 
 
 
-    @Override
-    public ResponseProjet createProject(RequestProjet requestProjet) {
+        @Override
+        public ResponseProjet createProject(RequestProjet requestProjet , String  bearerToken   ) {
+            UserProfile profile = user.getProfile(bearerToken).getBody();
+            Long userId = profile.getId();
 
 
         Projet projet=this.mapDTOToModel(requestProjet);
-        Long idUser = user.monProfil();
-        if(idUser!=null){
-        projet.setCreatorId(idUser);
+
+        if(userId!=null){
+        projet.setCreatorId(userId);
         return this.mapModelToDTO(projetRepo.save(projet));}
         else
             return null;

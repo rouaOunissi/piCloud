@@ -1,11 +1,13 @@
 package com.pi.users.jwt;
 
+import com.pi.users.controllers.UserProfile;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Builder;
+import lombok.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +22,8 @@ import java.util.function.Function;
 @Service
 
 public class JwtService {
-    //private final static String SECRET_KEY ="8CDEC8E3EDAD11B9652693579C28B";
-    private final static byte[] SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
+    private final static String SECRET_KEY ="Z4h5/H39t6gdMbJ0pAfce1EUn0JANtsYJWL9NLxjnGBzh0UZoh5BszZNPoKQoWS2";
+    //private final static byte[] SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256).getEncoded();
     //getSubject refers to the user email
     public String extractUserEmail(String token) {
         return extractClaim(token,Claims::getSubject) ;
@@ -73,11 +75,14 @@ public class JwtService {
     }
 
     private Key getSigninKey() {
-       // byte[] keyBytes= Decoders.BASE64.decode(SECRET_KEY);
-      //  return Keys.hmacShaKeyFor(keyBytes);
-        return Keys.hmacShaKeyFor(SECRET_KEY);
+        byte[] keyBytes= Decoders.BASE64.decode(SECRET_KEY);
+        return Keys.hmacShaKeyFor(keyBytes);
+       // return Keys.hmacShaKeyFor(SECRET_KEY);
 
 
     }
+
+
+
 
 }

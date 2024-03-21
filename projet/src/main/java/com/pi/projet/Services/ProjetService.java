@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ProjetService {
 
-    public ResponseProjet createProject(RequestProjet project);
+    public ResponseProjet createProject(RequestProjet project , String  bearerToken );
 
     public ResponseEntity<List<ResponseProjet>> findProjetByCategory_Id(Long id);
 }
