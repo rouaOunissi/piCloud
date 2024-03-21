@@ -18,7 +18,7 @@ public class CategoryController {
     private final CategoryService categoryService ;
 
     @PostMapping
-    public ResponseEntity<String> createCategory( String categoryName) {
+    public ResponseEntity<?> createCategory( String categoryName) {
      return categoryService.createCategory(categoryName);
     }
 
@@ -29,8 +29,12 @@ public class CategoryController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<String> updateCategory(@PathVariable("id") Long id,String catName){
+    public ResponseEntity<?> updateCategory(@PathVariable("id") Long id,String catName){
         return ResponseEntity.ok(categoryService.updateCategory(id,catName));
     }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable("id") Long id){
+        return categoryService.deleteCategory(id);
+    }
 }

@@ -6,12 +6,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 public interface CategoryService {
-    public ResponseEntity<String> createCategory(String categoryName);
+    public ResponseEntity<?> createCategory(String categoryName);
 
 
     public List<String> getAllCategories();
 
-    public String updateCategory(Long id,String catName);
+    public ResponseEntity<?> updateCategory(Long id,String catName);
+
+    public ResponseEntity<?> deleteCategory(Long id );
+
+
 
 
 }

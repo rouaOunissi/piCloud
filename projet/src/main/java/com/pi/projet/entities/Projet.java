@@ -20,11 +20,14 @@ public class Projet implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+
     private String title;
 
-    @Column(length = 10000)
+    @Column(length = 10000,nullable = false)
     private String description;
 
+    @Column(nullable = false)
     private Long creatorId;
 
     @CreationTimestamp
@@ -36,7 +39,7 @@ public class Projet implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ProjectStatus status = ProjectStatus.OPEN;
+    private ProjectStatus status ;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)

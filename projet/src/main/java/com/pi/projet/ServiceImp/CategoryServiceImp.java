@@ -18,7 +18,7 @@ public class CategoryServiceImp implements CategoryService {
     private final CategoryRepo categoryRepo ;
 
     @Override
-    public ResponseEntity<String> createCategory(String categoryName) {
+    public ResponseEntity<?> createCategory(String categoryName) {
             Category checkCategory = categoryRepo.findByName(categoryName);
 
         if (checkCategory==null){
@@ -27,7 +27,7 @@ public class CategoryServiceImp implements CategoryService {
         categoryRepo.save(category);
         return ResponseEntity.ok("Category added Successfully");
         }
-        return ResponseEntity.ok("Category already Exists");
+        return ResponseEntity.badRequest().body("Category already Exists");
 
     }
 
@@ -39,16 +39,26 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public String updateCategory(Long id,String catName) {
+    public ResponseEntity<?> updateCategory(Long id,String catName) {
         Optional<Category> category = categoryRepo.findById(id);
         if (category.isPresent()) {
             category.get().setName(catName);
             categoryRepo.save(category.get());
-            return "Category updated successfully";
+            return ResponseEntity.ok("Category updated successfully");
         } else
-            return "Category does not exist";
+            return ResponseEntity.badRequest().body("Category does not exist");
     }
 
+    @Override
+    public ResponseEntity<?> deleteCategory(Long id) {
+       Optional <Category> category = categoryRepo.findById(id);
+       if(category.isPresent()){
+        categoryRepo.deleteById(id);
+        return ResponseEntity.ok("Category deleted successfully");
+       }
+       else
+           return ResponseEntity.badRequest().body("Category Do Not Exist");
+    }
 
 
 }
