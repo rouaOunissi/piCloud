@@ -5,6 +5,7 @@ import com.pi.projet.DTO.ResponseProjet;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.entities.Projet;
 import com.pi.projet.repositories.ProjetRepo;
+import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -16,8 +16,6 @@ import java.util.List;
 @Builder
 public class RequestProjet {
 
-
-
     private String title;
 
     private String description;

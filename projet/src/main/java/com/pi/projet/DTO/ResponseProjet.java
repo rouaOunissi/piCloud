@@ -22,7 +22,6 @@ public class ResponseProjet {
 
     private String title;
 
-
     private String description;
 
     private LocalDate creationDate;
