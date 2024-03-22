@@ -2,8 +2,10 @@ package com.pi.users.controllers;
 
 import com.pi.users.entities.User;
 import com.pi.users.jwt.JwtService;
+import com.pi.users.services.UserServices;
 import com.pi.users.servicesImpl.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -18,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService ;
 
-   /* @PostMapping("/register")
-    public ResponseEntity<AuthentificationResponse> register(@RequestBody RegisterRequest request){
-        return ResponseEntity.ok(authService.register(request));
-    }*/
+    @Autowired
+    private UserServices userService;
+
+
    @PostMapping("/register")
    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
        authService.register(request);
@@ -30,25 +32,29 @@ public class AuthController {
    }
 
 
+   
+
+
     @PostMapping("/authentificate")
     public ResponseEntity<AuthentificationResponse> authentificate(@RequestBody AuthentificationRequest request){
         return ResponseEntity.ok(authService.authentificate(request));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+        User updatedUser = userService.updateUser(id, userDetails);
+        return ResponseEntity.ok(updatedUser);
+    }
 
- /*   @GetMapping("/mon-profil")
-    public ResponseEntity<UserProfile> monProfil() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    // Suppression d'un utilisateur par ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
 
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
-            User user = (User) authentication.getPrincipal();
-            Long userId = user.getIdUser();
-            UserProfile profile = new UserProfile(userId);
 
-            return ResponseEntity.ok(profile);
-        }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-    }*/
+
 
     @GetMapping("/mon-profil")
     public ResponseEntity<?> monProfil() {
