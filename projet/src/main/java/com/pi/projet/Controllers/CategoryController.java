@@ -13,24 +13,32 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projets/category")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200") // Allows cross-origin requests from your Angular app
+
 public class CategoryController {
 
     private final CategoryService categoryService ;
 
     @PostMapping
-    public ResponseEntity<?> createCategory( String categoryName) {
+    public ResponseEntity<?> createCategory( @RequestParam String categoryName) {
      return categoryService.createCategory(categoryName);
     }
 
     @GetMapping
-    public ResponseEntity<List<String>> getAllCategories(){
+    public ResponseEntity<?> getAllCategories(){
     List<String> categories = categoryService.getAllCategories();
     return ResponseEntity.ok(categories);
     }
 
+    @GetMapping("admin-cat")
+    public ResponseEntity<?> getAllCategoriesAdmin(){
+
+        return categoryService.getAllCategoriesAdmin();
+    }
+
     @PutMapping("{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable("id") Long id,String catName){
-        return ResponseEntity.ok(categoryService.updateCategory(id,catName));
+    public ResponseEntity<?> updateCategory(@PathVariable("id") Long id,@RequestParam String categoryName){
+        return categoryService.updateCategory(id,categoryName);
     }
 
     @DeleteMapping("{id}")

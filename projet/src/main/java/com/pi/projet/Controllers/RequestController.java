@@ -41,8 +41,8 @@ public class RequestController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteRequest(@PathVariable("id") Long id){
-        return  requestService.deleteRequest(id);
+    public void deleteRequest(@PathVariable("id") Long id){
+          requestService.deleteRequest(id);
     }
 
 

@@ -39,7 +39,7 @@ public class Projet implements Serializable {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ProjectStatus status ;
+    private ProjectStatus status = ProjectStatus.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
