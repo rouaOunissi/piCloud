@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 @RestController
@@ -22,8 +24,9 @@ public class IssueController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addIsssue(@RequestBody IssueRequest issueRequest) throws ParseException {
-        this.issueService.addIssue(issueRequest);
+    public void addIsssue(@RequestParam("title") String title, @RequestParam("descrtiption") String description,
+                          @RequestParam("image") MultipartFile image, @RequestParam("priority") Priority priority) throws ParseException, IOException {
+        this.issueService.addIssueWithImg(title,description,image,priority);
     }
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
@@ -49,8 +52,6 @@ public class IssueController {
     @ResponseStatus(HttpStatus.OK)
     public void updateIssue(@PathVariable int id_issue,@RequestBody IssueResponse issueResponse){
          this.issueService.updateIssue(id_issue,issueResponse);
-
-
     }
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

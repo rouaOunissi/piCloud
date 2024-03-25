@@ -22,7 +22,6 @@ public class CommentController {
     @PostMapping("/issueID/{id_issue}")
     @ResponseStatus(HttpStatus.CREATED)
     public void  addCommentToPost(@PathVariable int id_issue, @RequestBody CommentRequest commentRequest) throws ParseException {
-
          service.addCommentToIssue(id_issue,commentRequest);
     }
 
