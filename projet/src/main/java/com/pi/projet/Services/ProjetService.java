@@ -13,7 +13,14 @@ public interface ProjetService {
 
     public ResponseEntity<List<ResponseProjet>> findProjetByCategory_Id(Long id);
 
-    public List<ResponseProjet> getAllProjects();
+    public List<ResponseProjet> getAllAdminAcceptedProjects();
+    public List<ResponseProjet> getAllAdminPendingProjects();
+
+    public List<ResponseProjet> getAllAdminDeclinedProjects();
+
+    public ResponseEntity<?> adminAcceptProject(Long id);
+    public ResponseEntity<?> adminDeclineProject(Long id);
+
 
     public ResponseEntity<?> updateProjetTitle(Long id, String title ) ;
 

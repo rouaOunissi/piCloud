@@ -16,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projets")
 @RequiredArgsConstructor
+//@CrossOrigin(origins = "http://localhost:4200") // Allows cross-origin requests from your Angular app
+
 public class ProjetController {
 
     private final ProjetService projetService;
@@ -35,9 +37,27 @@ public class ProjetController {
         return projetService.getUserProjets(id);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ResponseProjet>> getAllProjects(){
-        return ResponseEntity.ok(projetService.getAllProjects());
+    @GetMapping("/admin-accepted")
+    public ResponseEntity<List<ResponseProjet>> getAllAdminAcceptedProjects(){
+        return ResponseEntity.ok(projetService.getAllAdminAcceptedProjects());
+    }
+
+    @GetMapping("admin-pending")
+    public ResponseEntity<List<ResponseProjet>> getAllAdminPendedProjects(){
+        return ResponseEntity.ok(projetService.getAllAdminPendingProjects());
+    }
+    @GetMapping("admin-declined")
+    public ResponseEntity<List<ResponseProjet>> getAllAdminDeclinedProjects(){
+        return ResponseEntity.ok(projetService.getAllAdminDeclinedProjects());
+    }
+
+    @PutMapping("/admin-accept/{id}")
+    public ResponseEntity<?> adminAcceptProjetct(@PathVariable("id") Long id){
+        return projetService.adminAcceptProject(id);
+    }
+    @PutMapping("/admin-decline/{id}")
+    public ResponseEntity<?> adminDeclineProjetct(@PathVariable("id") Long id){
+        return projetService.adminDeclineProject(id);
     }
 
     @PutMapping("/title/{id}")

@@ -1,9 +1,8 @@
 package com.pi.projet.ServiceImp;
 
+import com.pi.projet.DTO.MessageResponse;
 import com.pi.projet.DTO.RequestProjet;
 import com.pi.projet.DTO.ResponseProjet;
-import com.pi.projet.FeignClients.User;
-import com.pi.projet.FeignClients.UserProfile;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.entities.Category;
 import com.pi.projet.entities.ProjectStatus;
@@ -12,15 +11,11 @@ import com.pi.projet.repositories.CategoryRepo;
 import com.pi.projet.repositories.ProjetRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +24,6 @@ public class ProjetServiceImp implements ProjetService {
 
     private final ProjetRepo projetRepo ;
     private final CategoryRepo categoryRepo;
-    private final User user ;
 
 
 
@@ -39,7 +33,7 @@ public class ProjetServiceImp implements ProjetService {
         if(requestProjet.getTitle()!=null && requestProjet.getDescription()!=null && requestProjet.getCategoryId()!=null && requestProjet.getCreatorId()!=null){
 
             Projet projet = this.mapDTOToModel(requestProjet);
-            projet.setStatus(ProjectStatus.OPEN);
+       //     projet.setStatus(ProjectStatus.PENDING);
             projetRepo.save(projet);
             ResponseProjet responseProjet = this.mapModelToDTO(projet);
             return ResponseEntity.ok(responseProjet);
@@ -61,11 +55,52 @@ public class ProjetServiceImp implements ProjetService {
     }
 
     @Override
-    public List<ResponseProjet> getAllProjects() {
-        List<Projet> projets = projetRepo.findAll();
+    public List<ResponseProjet> getAllAdminAcceptedProjects() {
+        List<Projet> projets = projetRepo.getAllAdminAccepted();
         List<ResponseProjet> responseProjets = projets.stream().map(this::mapModelToDTO).toList();
         return responseProjets;
     }
+
+    @Override
+    public List<ResponseProjet> getAllAdminPendingProjects() {
+        List<Projet> projets = projetRepo.getAllAdminPending();
+        List<ResponseProjet> responseProjets = projets.stream().map(this::mapModelToDTO).toList();
+        return responseProjets;
+    }
+
+    @Override
+    public List<ResponseProjet> getAllAdminDeclinedProjects() {
+        List<Projet> projets = projetRepo.getAllAdminDeclined();
+        List<ResponseProjet> responseProjets = projets.stream().map(this::mapModelToDTO).toList();
+        return responseProjets;
+    }
+
+    @Override
+    public ResponseEntity<?> adminAcceptProject(Long id) {
+        Optional<Projet> projet1=projetRepo.findById(id);
+        if(projet1.isPresent()){
+            Projet projet11 = projet1.get();
+            projet11.setStatus(ProjectStatus.OPEN);
+            return ResponseEntity.ok(projetRepo.save(projet11));
+
+        }
+        else
+            return ResponseEntity.badRequest().body("Error accepting project");
+    }
+
+    @Override
+    public ResponseEntity<?> adminDeclineProject(Long id) {
+        Optional<Projet> projet1=projetRepo.findById(id);
+        if(projet1.isPresent()){
+            Projet projet11 = projet1.get();
+            projet11.setStatus(ProjectStatus.DECLINED);
+            return ResponseEntity.ok(projetRepo.save(projet11));
+
+        }
+        else
+            return ResponseEntity.badRequest().body("Error declining project");
+    }
+
 
     @Override
     public ResponseEntity<?> updateProjetTitle(Long id, String title) {
@@ -111,7 +146,7 @@ public class ProjetServiceImp implements ProjetService {
         Optional<Projet> projet = projetRepo.findById(id);
         if(projet.isPresent()){
             projetRepo.delete(projet.get());
-           return ResponseEntity.ok("Project deleted Successfully ! ");
+           return ResponseEntity.ok().body(new MessageResponse("Project deleted successfully!"));
         }
         else
             return ResponseEntity.badRequest().body("Project Do Not Exist !");
@@ -174,12 +209,13 @@ public class ProjetServiceImp implements ProjetService {
                 .description(requestProjet.getDescription())
                 .category(value)
                 .creatorId(requestProjet.getCreatorId())
-                .status(ProjectStatus.OPEN)
+                .status(ProjectStatus.PENDING)
                 .build()).orElse(null);
     }
 
     public ResponseProjet mapModelToDTO(Projet projet) {
         return ResponseProjet.builder()
+                .id(projet.getId())
                 .title(projet.getTitle())
                 .description(projet.getDescription())
                 .creationDate(projet.getCreationDate())

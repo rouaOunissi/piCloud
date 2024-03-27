@@ -1,16 +1,18 @@
 package com.pi.projet.ServiceImp;
 
-import com.pi.projet.FeignClients.UserProfile;
+import com.pi.projet.DTO.MessageResponse;
+import com.pi.projet.DTO.ResponseCategory;
 import com.pi.projet.Services.CategoryService;
 import com.pi.projet.entities.Category;
 import com.pi.projet.repositories.CategoryRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,8 +29,8 @@ public class CategoryServiceImp implements CategoryService {
         Category category = new Category();
         category.setName(categoryName);
         categoryRepo.save(category);
-        return ResponseEntity.ok("Category added Successfully");
-        }
+            return ResponseEntity.ok(HttpStatus.CREATED)   ;     }
+
         return ResponseEntity.badRequest().body("Category already Exists");
 
     }
@@ -41,12 +43,20 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public ResponseEntity<?> updateCategory(Long id,String catName) {
+    public ResponseEntity<?> getAllCategoriesAdmin() {
+
+        List<Category> categories = categoryRepo.findAll();
+        List<ResponseCategory> responseCategories = categories.stream().map(this::mapModelToDTO).toList();
+        return  ResponseEntity.ok(responseCategories);
+    }
+
+    @Override
+    public ResponseEntity<?> updateCategory(Long id, String catName) {
         Optional<Category> category = categoryRepo.findById(id);
         if (category.isPresent()) {
             category.get().setName(catName);
             categoryRepo.save(category.get());
-            return ResponseEntity.ok("Category updated successfully");
+            return ResponseEntity.ok(HttpStatus.ACCEPTED);
         } else
             return ResponseEntity.badRequest().body("Category does not exist");
     }
@@ -56,11 +66,18 @@ public class CategoryServiceImp implements CategoryService {
        Optional <Category> category = categoryRepo.findById(id);
        if(category.isPresent()){
         categoryRepo.deleteById(id);
-        return ResponseEntity.ok("Category deleted successfully");
+           return ResponseEntity.ok(HttpStatus.ACCEPTED);
        }
        else
            return ResponseEntity.badRequest().body("Category Do Not Exist");
     }
 
+    public ResponseCategory mapModelToDTO(Category category){
+        return ResponseCategory.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .nbr_projects(category.getProjects().size())
+                .build();
+    }
 
 }

@@ -11,6 +11,8 @@ public interface CategoryService {
 
     public List<String> getAllCategories();
 
+    public ResponseEntity<?> getAllCategoriesAdmin();
+
     public ResponseEntity<?> updateCategory(Long id,String catName);
 
     public ResponseEntity<?> deleteCategory(Long id );
