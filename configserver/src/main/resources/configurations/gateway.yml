@@ -49,6 +49,12 @@ spring:
               - Path=/api/v1/projets/**
 
 
+          - id: purchase
+            uri: http://localhost:9099
+            predicates:
+              - Path=/api/v1/purchase/**
+
+
 
 
 

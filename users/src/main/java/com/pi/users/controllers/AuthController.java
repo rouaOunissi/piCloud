@@ -1,7 +1,6 @@
 package com.pi.users.controllers;
 
 import com.pi.users.entities.User;
-import com.pi.users.jwt.JwtService;
 import com.pi.users.services.UserServices;
 import com.pi.users.servicesImpl.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -80,7 +78,14 @@ public class AuthController {
     }
 
 
+    @GetMapping("/user/{idd}")
+    public User getUserById(@PathVariable Long idd) {
+        return userService.getUserById(idd);
+    }
 
 
-
+    @PostMapping("/user/create")
+    public void addUser(@RequestBody User user) {
+        userService.addUser(user);
+    }
 }

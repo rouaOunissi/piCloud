@@ -3,7 +3,6 @@ package com.pi.users.servicesImpl;
 import com.pi.users.controllers.AuthentificationRequest;
 import com.pi.users.controllers.AuthentificationResponse;
 import com.pi.users.controllers.RegisterRequest;
-import com.pi.users.entities.Role;
 import com.pi.users.entities.User;
 import com.pi.users.jwt.JwtService;
 import com.pi.users.repository.UserRepo;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
