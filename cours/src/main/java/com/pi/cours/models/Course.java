@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @Data
 @AllArgsConstructor
@@ -26,5 +28,6 @@ public class Course {
     private Integer userId;
     private String fileType; // To store the type of file (video, PDF, image, etc.)
     private String fileContent; // To store the content of the file (Base64 encoded string, for example)
+    private BigDecimal price ;
 
 }

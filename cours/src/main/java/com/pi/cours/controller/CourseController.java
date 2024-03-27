@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/cours/")
+@CrossOrigin
 public class CourseController {
     @Autowired
     private CourseService courseService;
