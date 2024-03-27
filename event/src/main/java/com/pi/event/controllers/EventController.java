@@ -31,15 +31,8 @@ public class EventController {
     }
 
     @GetMapping(value = "/events/{idEvent}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public  ResponseEntity<?> findById(@PathVariable("idEvent") Integer id){
-        if (id == null){
-            return new ResponseEntity<>("id is null", HttpStatus.BAD_REQUEST);
-        }
-        Event requestedevent = this.eventService.findEventById(id);
-        if (requestedevent==null){
-            return new ResponseEntity<>("event not found", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(requestedevent, HttpStatus.FOUND);
+    public  Event findById(@PathVariable("idEvent") Integer id){
+      return this.eventService.findEventById(id);
     }
 
 
