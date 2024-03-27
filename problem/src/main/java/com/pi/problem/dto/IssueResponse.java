@@ -4,6 +4,7 @@ import com.pi.problem.enums.Priority;
 import com.pi.problem.enums.Status;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,8 @@ public class IssueResponse   {
     private long id_user;
     private String issueTitle;
     private String issueDescription;
-    private String uriImage;
+    @Lob
+    private byte[] uriImage;
     private Date creationDate;
     @Enumerated(EnumType.STRING)
     private Priority priority;
