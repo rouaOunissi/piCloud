@@ -29,7 +29,6 @@ public class ReservationServiceImp implements ReservationService{
     public Reservation save(Reservation reservation) {
         if (reservation == null) {
             log.error("Reservation is not valid {}", reservation);
-            throw new InvalidEntityException("La Reservation n'est pas valide", ErrorCodes.RESERVATION_NOT_VALID);
         }
         return this.reservationRepository.save(reservation);
     }
@@ -40,17 +39,12 @@ public class ReservationServiceImp implements ReservationService{
             log.error("Reservation ID is null");
             return null;
         }
-        return this.reservationRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucune Reservation avec l'ID = " + id + " n' ete trouve dans la BDD",
-                        ErrorCodes.RESERVATION_NOT_FOUND)
-        );
+        return this.reservationRepository.findById(id).orElse(null);
     }
 
     @Override
     public List<Reservation> findAll() {
-        return reservationRepository.findAll().stream()
-                .collect(Collectors.toList());
+        return reservationRepository.findAll();
     }
 
     @Override
@@ -67,7 +61,6 @@ public class ReservationServiceImp implements ReservationService{
     public Reservation updateReservation(Reservation reservation) {
         if (reservation == null) {
             log.error("Event is not valid {}", reservation);
-            throw new InvalidEntityException("L'Event n'est pas valide", ErrorCodes.EVENT_NOT_VALID);
         }
         return this.reservationRepository.save(reservation);
     }
@@ -83,13 +76,19 @@ public class ReservationServiceImp implements ReservationService{
     }
 
     @Override
-    public void addReservationToEvent(Reservation reservation, Integer idEvent) {
+    public boolean addReservationToEvent(Reservation reservation, Integer idEvent) throws EntityNotFoundException {
         if (reservation!=null && idEvent!=null){
             Event requestedEvent = this.eventRepository.findById(idEvent).orElse(null);
             if (requestedEvent!=null){
-                reservation.setEvent(requestedEvent);
-                this.reservationRepository.save(reservation);
+                int nb = requestedEvent.getEventNbplace();
+                if ( (nb- reservation.getNbPlace()) >=0){
+                    requestedEvent.setEventNbplace(nb-reservation.getNbPlace());
+                    reservation.setEvent(requestedEvent);
+                    this.reservationRepository.save(reservation);
+                    return Boolean.TRUE;
+                }
             }
         }
+        return Boolean.FALSE;
     }
 }

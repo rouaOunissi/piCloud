@@ -1,19 +1,13 @@
 package com.pi.event.services;
-
 import com.pi.event.entities.Event;
-import com.pi.event.exceptions.EntityNotFoundException;
-import com.pi.event.exceptions.ErrorCodes;
-import com.pi.event.exceptions.InvalidEntityException;
 import com.pi.event.repositories.EventRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @Slf4j
@@ -28,24 +22,19 @@ public class EventServiceImp implements EventService {
     public Event save(Event event) {
         if (event == null) {
             log.error("Event is not valid {}", event);
-            throw new InvalidEntityException("L'Event n'est pas valide", ErrorCodes.EVENT_NOT_VALID);
         }
-        
         return this.eventRepository.save(event);
     }
 
     @Override
-    public Event findEventById(Integer id) {
+    public Event findEventById(Integer id)  {
         if (id == null) {
             log.error("Event ID is null");
             return null;
         }
-        return this.eventRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException(
-                        "Aucun EVENT avec l'ID = " + id + " n' ete trouve dans la BDD",
-                        ErrorCodes.EVENT_NOT_FOUND)
-        );
+        return this.eventRepository.findById(id).orElse(null);
     }
+
 
     @Override
     public Event findByNameEvent(String nameEvent) {
@@ -53,18 +42,13 @@ public class EventServiceImp implements EventService {
             log.error("Event NAME is null");
             return null;
         }
-        return eventRepository.findEventByEventName(nameEvent)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(
-                                "Aucun event avec le nom = " + nameEvent + " n' ete trouve dans la BDD",
-                                ErrorCodes.EVENT_NOT_FOUND)
-                );
+        return this.eventRepository.findEventByEventName(nameEvent).orElse(null);
     }
 
     @Override
     public List<Event> findAll() {
-        return eventRepository.findAll().stream()
-                .collect(Collectors.toList());
+        log.info("heat the service");
+        return eventRepository.findAll();
     }
 
     @Override
@@ -78,11 +62,15 @@ public class EventServiceImp implements EventService {
     }
 
     @Override
-    public Event updateEvent(Event event) {
-        if (event == null) {
-            log.error("Event is not valid {}", event);
-            throw new InvalidEntityException("L'Event n'est pas valide", ErrorCodes.EVENT_NOT_VALID);
+    public boolean updateEvent(Integer id, Event event) {
+        Event requestedEvent = this.eventRepository.findById(id).orElse(null);
+        if (requestedEvent==null){
+            log.info("il n'ya aucun event avec l'id={}",id);
+            return Boolean.FALSE;
         }
-        return this.eventRepository.save(event);
+        this.eventRepository.save(event);
+        return Boolean.TRUE;
     }
+
+
 }
