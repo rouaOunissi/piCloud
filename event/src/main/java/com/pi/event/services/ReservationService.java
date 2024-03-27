@@ -23,6 +23,6 @@ public interface ReservationService {
 
 
 
-    public void addReservationToEvent(Reservation reservation, Integer idEvent);
+    public boolean addReservationToEvent(Reservation reservation, Integer idEvent);
 
 }
