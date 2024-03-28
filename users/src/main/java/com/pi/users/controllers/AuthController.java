@@ -12,22 +12,31 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/v1/users/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
+
     private final AuthService authService ;
 
     @Autowired
     private UserServices userService;
 
 
-   @PostMapping("/register")
-   public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-       authService.register(request);
-       return ResponseEntity.ok("Registration successful");
 
-   }
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        Optional<User> existingUser = authService.findByEmail(request.getEmail());
+        if (existingUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already registered");
+        }
+
+        authService.register(request);
+        return ResponseEntity.ok("Registration successful");
+    }
 
 
    
@@ -35,21 +44,9 @@ public class AuthController {
 
     @PostMapping("/authentificate")
     public ResponseEntity<AuthentificationResponse> authentificate(@RequestBody AuthentificationRequest request){
-        return ResponseEntity.ok(authService.authentificate(request));
+        return ResponseEntity.ok(authService.authenticate(request));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        User updatedUser = userService.updateUser(id, userDetails);
-        return ResponseEntity.ok(updatedUser);
-    }
-
-    // Suppression d'un utilisateur par ID
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok().build();
-    }
 
 
 
@@ -78,14 +75,6 @@ public class AuthController {
     }
 
 
-    @GetMapping("/user/{idd}")
-    public User getUserById(@PathVariable Long idd) {
-        return userService.getUserById(idd);
-    }
 
 
-    @PostMapping("/user/create")
-    public void addUser(@RequestBody User user) {
-        userService.addUser(user);
-    }
 }
