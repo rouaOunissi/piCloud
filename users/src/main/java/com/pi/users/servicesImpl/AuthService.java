@@ -8,7 +8,9 @@ import com.pi.users.entities.User;
 import com.pi.users.jwt.JwtService;
 import com.pi.users.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,10 +25,19 @@ import java.util.Optional;
 
 public class AuthService {
 
+    @Autowired
+    private KafkaTemplate<String,String> kafkaTemplate;
+
     private final UserRepo userRepo ;
     private final PasswordEncoder passwordEncoder ;
     private final JwtService jwtService ;
     private final AuthenticationManager authenticationManager ;
+
+
+    public void sendUserSignupEvent(String userId, String email) {
+        String message = userId + "," + email;
+        kafkaTemplate.send("mohamed", message);
+    }
     public ResponseEntity<?> register(RegisterRequest request) {
         var user = User.builder()
                 .firstName(request.getFirstName())
@@ -41,6 +52,10 @@ public class AuthService {
         user.setRole(Role.STUDENT);
 
         userRepo.save(user);
+        Optional<User> user1 = userRepo.findByEmail(request.getEmail());
+        if(user1.isPresent()){
+            this.sendUserSignupEvent(user1.get().getIdUser().toString(),user1.get().getEmail());
+        }
 
         return ResponseEntity.ok("User registered successfully");
 
