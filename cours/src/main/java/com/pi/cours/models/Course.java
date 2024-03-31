@@ -27,4 +27,7 @@ public class Course {
     private String fileType; // To store the type of file (video, PDF, image, etc.)
     private String fileContent; // To store the content of the file (Base64 encoded string, for example)
 
+    public void setFileName(String fileName) {
+
+    }
 }

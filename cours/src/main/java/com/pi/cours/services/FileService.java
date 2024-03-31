@@ -30,7 +30,7 @@ public class FileService implements IFileService {
 
         try {
             String fileName = generateUniqueFileName(file.getOriginalFilename());
-            Path filePath = Paths.get(UPLOAD_DIR, fileName);
+            Path filePath = Paths.get("src/main/resources/", UPLOAD_DIR, fileName);
 
             Files.createDirectories(filePath.getParent());
             try (var inputStream = file.getInputStream()) {

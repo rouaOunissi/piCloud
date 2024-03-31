@@ -3,6 +3,7 @@ package com.pi.cours.services;
 import com.pi.cours.models.Course;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,5 +15,6 @@ public interface CourseService {
     Course updateCours(Long id, Course cours);
     void deleteCours(Long id);
     Optional<Course> addCoursWithFile(Course cours, MultipartFile file);
+
 
 }

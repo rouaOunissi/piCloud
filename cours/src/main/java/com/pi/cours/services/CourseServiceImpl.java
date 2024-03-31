@@ -7,8 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -17,6 +22,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     private CourseDao courseDao;
+    private static final String UPLOAD_DIR = "uploads/";
 
     @Override
     public List<Course> findAll() {
@@ -40,6 +46,8 @@ public class CourseServiceImpl implements CourseService {
     public Course createCours(Course cours) {
         return courseDao.save(cours);
     }
+
+
 
     @Override
     public Course updateCours(Long id, Course cours) {
@@ -69,5 +77,9 @@ public class CourseServiceImpl implements CourseService {
             return Optional.empty();
         }
     }
+
+
+
+
 
 }

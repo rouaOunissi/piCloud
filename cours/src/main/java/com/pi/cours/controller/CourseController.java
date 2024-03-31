@@ -5,14 +5,17 @@ import lombok.extern.slf4j.Slf4j;
 import com.pi.cours.models.Course;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.pi.cours.services.CourseService;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.util.List;
 @Slf4j
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/v1/cours/")
 public class CourseController {
@@ -31,7 +34,7 @@ public class CourseController {
             return "test";
         }
 
-  /*  @PostMapping("/add")
+   /*@PostMapping("/add")
     public ResponseEntity<Course> createCours(@RequestBody Course cours) {
         Course createdCours = courseService.save(cours);
         return new ResponseEntity<>(createdCours, HttpStatus.CREATED);
@@ -56,11 +59,13 @@ public class CourseController {
         courseService.deleteCours(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    @PostMapping("/create")
+   @PostMapping("/create")
     public ResponseEntity<Course> createCours(@RequestBody Course cours) {
         Course createdCours = courseService.createCours(cours);
         return new ResponseEntity<>(createdCours, HttpStatus.CREATED);
     }
+
+
     @PutMapping("/{id}")
     public ResponseEntity<Course> updateCours(@PathVariable("id") Long id, @RequestBody Course cours) {
         Course updatedCours = courseService.updateCours(id, cours);
@@ -71,15 +76,13 @@ public class CourseController {
         }
     }
 
-
-    @PostMapping("/add")
-    public ResponseEntity<?> addCoursWithFile(@RequestBody Course cours, @RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/uploadFile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadFile( @RequestParam("file") MultipartFile file) {
         try {
             String filePath = fileService.uploadFile(file).orElse(null);
             if (filePath != null) {
-                cours.setFilePath(filePath);
-                Course savedCours = courseService.createCours(cours);
-                return ResponseEntity.status(HttpStatus.CREATED).body(savedCours);
+                return ResponseEntity.status(HttpStatus.CREATED).body(filePath);
+
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to upload file");
         } catch (Exception e) {
@@ -89,8 +92,11 @@ public class CourseController {
     }
 
 
+
+
     @GetMapping("/qq")
     public String tes2t() {
         return "test3";
     }
+
 }
