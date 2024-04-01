@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/projets/requests")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class RequestController {
 
     private final RequestService requestService;
@@ -25,9 +26,11 @@ public class RequestController {
         return requestService.getRequestByProjetId(id);
     }
 
+
+
     @GetMapping("/myrequests/{id}")
     public ResponseEntity<?> getRequestByEncadreurId(@PathVariable ("id") Long id){
-        return requestService.getRequestByEncadreurId(id);
+        return requestService.getRequestByUserId(id);
     }
 
     @PutMapping("/accept/{id}")

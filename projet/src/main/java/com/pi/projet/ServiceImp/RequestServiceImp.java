@@ -1,9 +1,6 @@
 package com.pi.projet.ServiceImp;
 
-import com.pi.projet.DTO.RequestRequest;
-import com.pi.projet.DTO.ResponseProjet;
-import com.pi.projet.DTO.ResponseRequest;
-import com.pi.projet.DTO.ResponseRequest2;
+import com.pi.projet.DTO.*;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.Services.RequestService;
 import com.pi.projet.entities.ProjectStatus;
@@ -31,13 +28,13 @@ public class RequestServiceImp implements RequestService {
 
     @Override
     public ResponseEntity<?> createRequest( RequestRequest requestRequest) {
-       Optional <Projet> projet = projetRepo.findById(requestRequest.getProject_id());
-       if(projet.isPresent() && requestRequest.getEncadreurId()!=null && requestRequest.getMessage()!=null && requestRequest.getProject_id()!=null){
+       Optional <Projet> projet = projetRepo.findById(requestRequest.getProjectId());
+       if(projet.isPresent() && requestRequest.getEncadreurId()!=null && requestRequest.getMessage()!=null && requestRequest.getProjectId()!=null){
            Projet  projet1=projet.get();
            Request request = this.mapDTOtoModel(requestRequest);
            request.setProject(projet1);
            requestRepo.save(request);
-           return  ResponseEntity.ok("Request have been Sent !");
+           return ResponseEntity.ok().body(new MessageResponse("Applied successfully "));
        }
        else
            return ResponseEntity.badRequest().body("Bad Request !");
@@ -57,11 +54,11 @@ public class RequestServiceImp implements RequestService {
     }
 
     @Override
-    public ResponseEntity<?> getRequestByEncadreurId(Long id) {
+    public ResponseEntity<?> getRequestByUserId(Long id) {
     List<ResponseRequest2> responseRequest2s = requestRepo.getRequestsByEncadreurId(id);
 
     if (responseRequest2s.isEmpty())
-        return ResponseEntity.badRequest().body("You Have Not Make Any Requests Yet !");
+        return ResponseEntity.ok("No requests yet !");
     else {
         return ResponseEntity.ok(responseRequest2s);
     }

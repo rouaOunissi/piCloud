@@ -10,7 +10,9 @@ import com.pi.users.jwt.JwtService;
 import com.pi.users.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +29,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 
 public class AuthService {
+
+    @Autowired
+    private KafkaTemplate<String,String> kafkaTemplate;
 
     private final UserRepo userRepo ;
     private final PasswordEncoder passwordEncoder ;
@@ -45,6 +50,18 @@ public class AuthService {
         if (emailAlreadyExists(email)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already registered");
         }
+
+
+    public void sendUserSignupEvent(String userId, String email) {
+        String message = userId + "," + email;
+        kafkaTemplate.send("mohamed", message);
+    }
+    public ResponseEntity<?> register(RegisterRequest request) {
+        var user = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
 
         User user = User.builder()
                 .firstName(firstName)
@@ -65,6 +82,11 @@ public class AuthService {
         }
 
         userRepo.save(user);
+        Optional<User> user1 = userRepo.findByEmail(request.getEmail());
+        if(user1.isPresent()){
+            this.sendUserSignupEvent(user1.get().getIdUser().toString(),user1.get().getEmail());
+        }
+
         return ResponseEntity.ok("User registered successfully");
     }
 

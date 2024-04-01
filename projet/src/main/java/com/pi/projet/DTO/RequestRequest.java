@@ -25,7 +25,7 @@ public class RequestRequest {
     private Long encadreurId;
 
 
-    private Long project_id;
+    private Long projectId;
 
     private String message;
 }

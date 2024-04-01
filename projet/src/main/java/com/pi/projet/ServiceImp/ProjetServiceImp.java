@@ -2,6 +2,7 @@ package com.pi.projet.ServiceImp;
 
 import com.pi.projet.DTO.MessageResponse;
 import com.pi.projet.DTO.RequestProjet;
+import com.pi.projet.DTO.RequestProjet2;
 import com.pi.projet.DTO.ResponseProjet;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.entities.Category;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,6 +98,19 @@ public class ProjetServiceImp implements ProjetService {
             projet11.setStatus(ProjectStatus.DECLINED);
             return ResponseEntity.ok(projetRepo.save(projet11));
 
+        }
+        else
+            return ResponseEntity.badRequest().body("Error declining project");
+    }
+
+    @Override
+    public ResponseEntity<?> updateProject(Long id, RequestProjet2 requestProjet2) {
+        Optional<Projet> projet= projetRepo.findById(id);
+        if(projet.isPresent()){
+            Projet projet1 = projet.get();
+            projet1.setTitle(requestProjet2.getTitle());
+            projet1.setDescription(requestProjet2.getDescription());
+            return ResponseEntity.ok(projetRepo.save(projet1));
         }
         else
             return ResponseEntity.badRequest().body("Error declining project");
@@ -196,7 +211,7 @@ public class ProjetServiceImp implements ProjetService {
     public ResponseEntity<?> getUserProjets(Long id) {
         List<Projet> projets = projetRepo.findProjetByCreatorId(id);
         if(projets.isEmpty())
-            return ResponseEntity.ok("You don't have Projects !");
+            return ResponseEntity.ok(new ArrayList<>());
         else
             return ResponseEntity.ok(projets.stream().map(this::mapModelToDTO).toList());
     }

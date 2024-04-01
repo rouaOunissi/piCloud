@@ -10,6 +10,8 @@ import lombok.*;
 @Builder
 public class ResponseRequest2 {
 
+    private Long id ;
     private String projetTitle;
+    private  String message ;
     private RequestStatus status ;
 }

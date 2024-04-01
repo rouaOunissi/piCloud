@@ -9,7 +9,7 @@ public interface CategoryService {
     public ResponseEntity<?> createCategory(String categoryName);
 
 
-    public List<String> getAllCategories();
+    public List<?> getAllCategories();
 
     public ResponseEntity<?> getAllCategoriesAdmin();
 
