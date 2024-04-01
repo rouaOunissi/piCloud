@@ -37,6 +37,13 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder ;
     private final JwtService jwtService ;
     private final AuthenticationManager authenticationManager ;
+
+
+
+    public void sendUserSignupEvent(String userId, String email) {
+        String message = userId + "," + email;
+        kafkaTemplate.send("mohamed", message);
+    }
     public ResponseEntity<?> register(
             @RequestParam("email") String email,
             @RequestParam("firstName") String firstName,
@@ -51,18 +58,6 @@ public class AuthService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already registered");
         }
 
-
-    public void sendUserSignupEvent(String userId, String email) {
-        String message = userId + "," + email;
-        kafkaTemplate.send("mohamed", message);
-    }
-    public ResponseEntity<?> register(RegisterRequest request) {
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-
         User user = User.builder()
                 .firstName(firstName)
                 .lastName(lastName)
@@ -76,17 +71,16 @@ public class AuthService {
 
         if (image != null && !image.isEmpty()) {
 
-                byte[] imageBytes = image.getBytes();
-                user.setImage(imageBytes); // Set the image as a byte array
+            byte[] imageBytes = image.getBytes();
+            user.setImage(imageBytes); // Set the image as a byte array
 
         }
 
         userRepo.save(user);
-        Optional<User> user1 = userRepo.findByEmail(request.getEmail());
+        Optional<User> user1 = userRepo.findByEmail(user.getEmail());
         if(user1.isPresent()){
             this.sendUserSignupEvent(user1.get().getIdUser().toString(),user1.get().getEmail());
         }
-
         return ResponseEntity.ok("User registered successfully");
     }
 

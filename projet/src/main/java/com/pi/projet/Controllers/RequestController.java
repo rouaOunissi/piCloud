@@ -21,6 +21,9 @@ public class RequestController {
         return requestService.createRequest(requestRequest);
     }
 
+    // requests li jou l projets mou3ayen
+
+    //lazem nzidou hedhi fl front
     @GetMapping("/projet/{id}")
     public ResponseEntity<?> getRequestByProjectId(@PathVariable("id") Long id){
         return requestService.getRequestByProjetId(id);
@@ -28,6 +31,9 @@ public class RequestController {
 
 
 
+    //request li nta baaethhom l'encadreur lel les projets lkol
+
+    //fl front fama hedhi
     @GetMapping("/myrequests/{id}")
     public ResponseEntity<?> getRequestByEncadreurId(@PathVariable ("id") Long id){
         return requestService.getRequestByUserId(id);
