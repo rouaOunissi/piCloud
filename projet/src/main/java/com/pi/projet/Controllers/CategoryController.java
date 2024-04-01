@@ -1,6 +1,7 @@
 package com.pi.projet.Controllers;
 
 import com.pi.projet.DTO.RequestProjet;
+import com.pi.projet.DTO.ResponseCategory;
 import com.pi.projet.DTO.ResponseProjet;
 import com.pi.projet.Services.CategoryService;
 import com.pi.projet.repositories.CategoryRepo;
@@ -13,8 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projets/category")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "http://localhost:4200") // Allows cross-origin requests from your Angular app
-
+@CrossOrigin(origins = "*")
 public class CategoryController {
 
     private final CategoryService categoryService ;
@@ -26,7 +26,7 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<?> getAllCategories(){
-    List<String> categories = categoryService.getAllCategories();
+    List<?> categories = categoryService.getAllCategories();
     return ResponseEntity.ok(categories);
     }
 

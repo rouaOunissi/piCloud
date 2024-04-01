@@ -1,6 +1,7 @@
 package com.pi.projet.Controllers;
 
 import com.pi.projet.DTO.RequestProjet;
+import com.pi.projet.DTO.RequestProjet2;
 import com.pi.projet.DTO.ResponseProjet;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.entities.Projet;
@@ -16,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projets")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "http://localhost:4200") // Allows cross-origin requests from your Angular app
+@CrossOrigin(origins = "*") // Allows cross-origin requests from your Angular app
 
 public class ProjetController {
 
@@ -27,7 +28,7 @@ public class ProjetController {
         return  projetService.createProject(project);
     }
 
-    @GetMapping("/category/{category_id}")
+    @GetMapping("/cat/{category_id}")
     public ResponseEntity<List<ResponseProjet>> getProjectByCategory(@PathVariable("category_id") Long id){
         return projetService.findProjetByCategory_Id(id);
     }
@@ -66,6 +67,10 @@ public class ProjetController {
         return projetService.updateProjetTitle(id,title);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updatePrject(@PathVariable("id") Long id, @RequestBody RequestProjet2 requestProjet2){
+        return projetService.updateProject(id,requestProjet2);
+    }
     @PutMapping("/description/{id}")
     public ResponseEntity<?> updateProjectDescription(@PathVariable("id") Long id , String desc ){
 
@@ -80,7 +85,9 @@ public class ProjetController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteProjet(@PathVariable("id") Long id){
-        return projetService.deleteProjet(id);
+
+         projetService.deleteProjet(id);
+         return  ResponseEntity.noContent().build();
     }
 
 

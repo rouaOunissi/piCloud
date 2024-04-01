@@ -36,9 +36,9 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public List<String> getAllCategories() {
+    public List<?> getAllCategories() {
         List<Category> categories = categoryRepo.findAll();
-        List<String> caStrings = categories.stream().map(Category::getName).toList();
+        List<ResponseCategory> caStrings = categories.stream().map(this::mapModelToDTO).toList();
         return caStrings;
     }
 
