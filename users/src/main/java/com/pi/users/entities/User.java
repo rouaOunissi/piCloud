@@ -1,5 +1,6 @@
 package com.pi.users.entities;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +29,8 @@ public class User implements UserDetails,Serializable {
     private String password ;
     private int level ;
     private int numTel ;
+    @Lob
+    private byte[] image;
     @Enumerated(EnumType.STRING)
     private Role role;
     @Enumerated(EnumType.STRING)

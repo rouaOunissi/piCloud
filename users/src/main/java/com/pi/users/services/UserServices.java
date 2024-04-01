@@ -1,17 +1,33 @@
 package com.pi.users.services;
 
 
+import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserServices {
-     User updateUser(Long id, User userDetails);
+
+
+     User updateUser(Long id,
+                     @RequestParam("firstName") String firstName,
+                     @RequestParam("lastName") String lastName,
+                     @RequestParam("email") String email,
+                     @RequestParam("password") String password,
+                     @RequestParam("level") int level,
+                     @RequestParam("numTel") int numTel,
+                     @RequestParam("speciality") Speciality speciality,
+                     @RequestParam(value = "image", required = false) MultipartFile image) throws IOException;
+
      void deleteUser(Long id) ;
 
      User getUserById(Long id);
 
      List<User> findAll() ;
+     public List<User> searchByFirstName(String firstName);
 
 
 

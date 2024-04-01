@@ -20,6 +20,8 @@ public class RegisterRequest {
     private String password ;
     private int level ;
     private int numTel ;
+    private String image;
+
     private Role role;
     private Speciality speciality ;
 

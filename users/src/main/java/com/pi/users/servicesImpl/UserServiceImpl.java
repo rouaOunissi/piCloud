@@ -9,7 +9,10 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -45,19 +48,35 @@ public class UserServiceImpl implements UserServices {
         }
 
     @Override
-    public User updateUser(Long id, User userDetails) {
+    public User updateUser(Long id,
+                           @RequestParam("firstName") String firstName,
+                           @RequestParam("lastName") String lastName,
+                           @RequestParam("email") String email,
+                           @RequestParam("password") String password,
+                           @RequestParam("level") int level,
+                           @RequestParam("numTel") int numTel,
+                           @RequestParam("speciality") Speciality speciality,
+                           @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
 
 
-        user.setFirstName(userDetails.getFirstName());
-        user.setLastName(userDetails.getLastName());
-        user.setEmail(userDetails.getEmail());
-        user.setPassword(userDetails.getPassword());
-        user.setLevel(userDetails.getLevel());
-        user.setNumTel(userDetails.getNumTel());
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setLevel(level);
+        user.setNumTel(numTel);
+
         user.setRole(Role.STUDENT);
-        user.setSpeciality(userDetails.getSpeciality());
+        user.setSpeciality(speciality);
+
+        if (image != null && !image.isEmpty()) {
+
+            byte[] imageBytes = image.getBytes();
+            user.setImage(imageBytes);
+
+        }
 
         return userRepository.save(user);
     }
@@ -81,8 +100,13 @@ public class UserServiceImpl implements UserServices {
         return this.userRepository.findAll();
     }
 
-
+    @Override
+    public List<User> searchByFirstName(String firstName) {
+        return userRepository.findByFirstNameContaining(firstName);
     }
+
+
+}
 
 
 

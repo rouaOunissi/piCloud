@@ -4,10 +4,12 @@ import com.pi.users.controllers.AuthentificationRequest;
 import com.pi.users.controllers.AuthentificationResponse;
 import com.pi.users.controllers.RegisterRequest;
 import com.pi.users.entities.Role;
+import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
 import com.pi.users.jwt.JwtService;
 import com.pi.users.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +17,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Optional;
 
 @Service
@@ -27,23 +32,44 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder ;
     private final JwtService jwtService ;
     private final AuthenticationManager authenticationManager ;
-    public ResponseEntity<?> register(RegisterRequest request) {
-        var user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+    public ResponseEntity<?> register(
+            @RequestParam("email") String email,
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("password") String password,
+            @RequestParam("level") int level,
+            @RequestParam("numTel") int numTel,
+            @RequestParam("speciality") Speciality speciality,
+            @RequestParam(value = "image", required = false) MultipartFile image
+    ) throws IOException {
+        if (emailAlreadyExists(email)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already registered");
+        }
 
-                .level(request.getLevel())
-                .numTel(request.getNumTel())
-                .speciality(request.getSpeciality())
+        User user = User.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .password(passwordEncoder.encode(password)) // Make sure to encode the password
+                .level(level)
+                .numTel(numTel)
+                .speciality(speciality)
+                .role(Role.STUDENT) // Assign a role if needed
                 .build();
-        user.setRole(Role.STUDENT);
+
+        if (image != null && !image.isEmpty()) {
+
+                byte[] imageBytes = image.getBytes();
+                user.setImage(imageBytes); // Set the image as a byte array
+
+        }
 
         userRepo.save(user);
-
         return ResponseEntity.ok("User registered successfully");
+    }
 
+    private boolean emailAlreadyExists(String email) {
+        return userRepo.findByEmail(email).isPresent();
     }
 
     public AuthentificationResponse authenticate (AuthentificationRequest request) {
