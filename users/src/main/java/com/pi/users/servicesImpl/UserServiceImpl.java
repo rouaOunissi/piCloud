@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserServices {
 
 
 
-    @PostConstruct
+  /*  @PostConstruct
     public void createAdminAccount(){
         User adminAccount = userRepo.findByRole(Role.ADMIN);
         if(adminAccount==null) {
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserServices {
         }
             System.out.println("admin account created successfuly");
 
-        }
+        }*/
 
     @Override
     public User updateUser(Long id, User userDetails) {
