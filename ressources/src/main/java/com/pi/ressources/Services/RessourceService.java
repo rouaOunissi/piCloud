@@ -20,6 +20,8 @@ public interface RessourceService {
     Ressource findById(Long id);
 
 
+    List<String> getAllTypeRessourceNames();
+
     List<Ressource> getByIdUser(Long userid);
 
 
@@ -29,7 +31,9 @@ public interface RessourceService {
 
     Ressource updateRessource(Long idRessource, Ressource ressource);
 
-    String deteleRessource(Long id, Long idUser);
 
-    //String deteleRessource(Long id);
+
+    String deteleRessource(Long id);
+
+    String GenerateInvoicePDF(Long id);
 }
