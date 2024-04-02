@@ -5,27 +5,35 @@ import com.pi.ressources.Dao.RessourceDao;
 import com.pi.ressources.Enum.TypeRessource;
 import com.pi.ressources.Services.FileUploadService;
 import com.pi.ressources.Services.RessourceService;
+import com.pi.ressources.ServicesImpl.PDFExtractorService;
 import com.pi.ressources.entities.Ressource;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 @Slf4j
 @RestController
 @Controller
+@RequestMapping("/api/v1/ressource/")
+@CrossOrigin(origins = "http://localhost:4200")
 public class RessourceController {
 
 
@@ -79,8 +87,16 @@ public class RessourceController {
     }
 
 
+    @GetMapping("/listeTypeRess")
+    @ResponseBody
+    public List<String> getAllTypeRessourceNames()
+    {
+        return ressourceService.getAllTypeRessourceNames();
+    }
 
-    @PutMapping("/upadet/{idRessource}")
+
+
+    @PutMapping("/update/{idRessource}")
     @ResponseBody
     public Ressource updateRessource(@PathVariable Long idRessource ,@RequestBody Ressource ressource)
     {
@@ -88,10 +104,10 @@ public class RessourceController {
     }
 
 
-    @DeleteMapping("/deleteRessByid/{id}/{idUser}")
+    @DeleteMapping("/deleteRessByid/{id}")
     @ResponseBody
-    public String deleteRessource (@PathVariable Long id, @PathVariable Long idUser)
-    {return this.ressourceService.deteleRessource(id,idUser);}
+    public String deleteRessource (@PathVariable Long id)
+    {return this.ressourceService.deteleRessource(id);}
 
 
     /***
@@ -160,6 +176,79 @@ public class RessourceController {
         }
     }
 
+    @Autowired
+    private RestTemplate restTemplate;
+    @GetMapping("/getRessourceContent")
+    public ResponseEntity<String> getRessourceContent(@RequestParam String url) {
+        try {
+
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+
+                return ResponseEntity.ok(response.getBody());
+            } else {
+
+                return ResponseEntity.status(response.getStatusCode()).body("Failed to fetch resource content");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
+
+    @GetMapping("/generateInvoicePDF/{id}")
+    public ResponseEntity<String> generateInvoicePDF(@PathVariable Long id) {
+        try {
+
+            String pdfUrl = ressourceService.GenerateInvoicePDF(id);
+
+            return ResponseEntity.ok(pdfUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred while generating PDF invoice");
+        }
+    }
+
+    @Autowired
+    private PDFExtractorService pdfExtractorService;
+
+    @GetMapping("/extractContent/{idRessource}")
+    public ResponseEntity<?> extractContent(@PathVariable Long idRessource) {
+        try {
+            Ressource ressource = ressourceService.findById(idRessource);
+            if (ressource == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"La ressource avec l'ID spécifié n'a pas été trouvée.\"}");
+            }
+            String contentType = ressource.getFileType().toLowerCase();
+            String content;
+
+
+            if ("pdf".equals(contentType)) {
+
+                content = pdfExtractorService.extractTextFromPDF(new FileInputStream(new File("C:/xampp/htdocs/Files/" + ressource.getUrlFile())));
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body("{\"content\": \"" + content + "\"}");
+            } else if ("docx".equals(contentType)) {
+
+                XWPFDocument docx = new XWPFDocument(new FileInputStream(new File("C:/xampp/htdocs/Files/" + ressource.getUrlFile())));
+                XWPFWordExtractor extractor = new XWPFWordExtractor(docx);
+                content = extractor.getText();
+                extractor.close();
+                return ResponseEntity.ok()
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body("{\"content\": \"" + content + "\"}");
+            } else {
+
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Le type de fichier n'est pas pris en charge.\"}");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Erreur lors de l'extraction du contenu du fichier.\"}");
+        }
+    }
 
 
 }

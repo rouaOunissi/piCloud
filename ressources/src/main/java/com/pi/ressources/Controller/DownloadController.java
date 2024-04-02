@@ -4,6 +4,7 @@ import com.pi.ressources.Services.DownloadService;
 import com.pi.ressources.Services.RessourceService;
 import com.pi.ressources.entities.Download;
 import com.pi.ressources.entities.Ressource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
@@ -21,7 +22,11 @@ import java.util.List;
 
 import static com.google.common.io.Files.getFileExtension;
 
+@Slf4j
+@RestController
 @Controller
+@RequestMapping("/api/v1/download/")
+@CrossOrigin(origins = "http://localhost:4200")
 public class DownloadController {
 
     @Autowired
@@ -69,26 +74,24 @@ public class DownloadController {
     @Autowired
     private RessourceService ressourceService;
 
-    @GetMapping("/download/{urlFile}")
+    @GetMapping("/download/{urlFile}/{fileName}")
     @ResponseBody
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String urlFile) {
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String urlFile, @PathVariable String fileName) {
         try {
-            // Récupérer le contenu du fichier
+
             byte[] fileContent = downloadService.downloadFileContent(urlFile);
 
-            // Définir les en-têtes de la réponse
             HttpHeaders headers = new HttpHeaders();
-            // Déterminer le type de contenu en fonction de l'extension du fichier
+
             String contentType = determineContentType(urlFile);
             headers.setContentType(MediaType.parseMediaType(contentType));
-            // Extraire le nom du fichier de l'URL
-            String fileName = extractFileNameFromUrl(urlFile);
+
             headers.setContentDispositionFormData("attachment", fileName);
 
-            // Rechercher la ressource dans la base de données
+
             Ressource ressource = ressourceService.getByUrlFile(urlFile);
             if (ressource != null) {
-                // Ajouter le téléchargement à la base de données
+
                 Download download = new Download();
                 download.setRessource(ressource);
                 download.setIdUser(Long.valueOf(1));
@@ -105,6 +108,7 @@ public class DownloadController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     private String extractFileNameFromUrl(String url) {

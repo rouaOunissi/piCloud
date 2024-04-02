@@ -18,4 +18,5 @@ public interface RessourceDao extends JpaRepository<Ressource,Long> {
 
     @Query("SELECT r FROM Ressource r WHERE r.urlFile = :urlFile")
     Ressource findByUrlFile(@Param("urlFile") String urlFile);
+
 }

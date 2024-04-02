@@ -12,7 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Optional;
 import java.util.Date;
+import java.util.Arrays;
 
+import java.util.stream.Collectors;
 import static com.google.common.io.Files.getFileExtension;
 
 @Service
@@ -82,6 +84,16 @@ public  class RessourceServiceImpl implements RessourceService {
     }
 
     /**
+     * Liste des types de ressource dans l'énumération */
+    @Override
+    public List<String> getAllTypeRessourceNames() {
+        return Arrays.stream(TypeRessource.values())
+                .map(Enum::name)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
      * find liste des ressources by idUser (pour chaque user)*/
 
     @Override
@@ -123,34 +135,35 @@ public  class RessourceServiceImpl implements RessourceService {
 
 
 
-   /** @Override
+   @Override
     public String deteleRessource(Long id)
     {
         ressourceDao.deleteById(id);
         return "ressource removed !!";
     }
-    **/
 
 
-   //à revérifier
+
+
     @Override
-      public String deteleRessource(Long id, Long idUser)
-    {
-        Optional<Ressource> optionalRessource = ressourceDao.findById(id);
-        if (optionalRessource.isPresent()) {
-            Ressource ressource = optionalRessource.get();
-            if (ressource.getIdUser().equals(idUser)) {
-                ressourceDao.delete(ressource);
-                return "Ressource removed !!";
+    public String GenerateInvoicePDF(Long id) {
+        try {
+
+            Optional<Ressource> optionalRessource = ressourceDao.findById(id);
+            if (optionalRessource.isPresent()) {
+
+                String pdfUrl = optionalRessource.get().getUrlFile();
+
+                return pdfUrl;
             } else {
-                return "Ressource does not belong to the user!";
+
+                return "Resource not found for the given ID";
             }
-        } else {
-            return "Ressource not found!";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error occurred while generating PDF invoice";
         }
     }
-
-
 
 
 
