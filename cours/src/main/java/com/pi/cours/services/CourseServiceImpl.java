@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +59,7 @@ public class CourseServiceImpl implements CourseService {
     public void deleteCours(Long id) {
         courseDao.deleteById(id);
     }
-    @Override
+   /* @Override
     public Optional<Course> addCoursWithFile(Course course, MultipartFile file) {
         try {
             String filePath = fileService.uploadFile(file).orElse(null);
@@ -68,6 +73,18 @@ public class CourseServiceImpl implements CourseService {
             e.printStackTrace();
             return Optional.empty();
         }
+    }*/
+    public void addCoursWithFile(String title, String description, MultipartFile video, BigDecimal price) throws IOException {
+
+        Course course = Course.builder()
+                .title(title)
+                .description(description)
+                .price(price)
+                .fileContent((video.getBytes()))
+                .userId(1)
+                .build();
+        courseDao.save(course);
+
     }
 
 }
