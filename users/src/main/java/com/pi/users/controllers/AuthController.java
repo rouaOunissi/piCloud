@@ -44,7 +44,10 @@ public class AuthController {
 
 
 
-
+    @PostMapping("/authentificate")
+    public ResponseEntity<AuthentificationResponse> authentificate(@RequestBody AuthentificationRequest request){
+        return ResponseEntity.ok(authService.authenticate(request));
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(
@@ -78,13 +81,6 @@ public class AuthController {
         authService.register(email, firstName, lastName, password, level, numTel, speciality, image);
 
         return ResponseEntity.ok(new ApiResponse("Registration successful"));
-    }
-
-
-
-    @PostMapping("/authentificate")
-    public ResponseEntity<AuthentificationResponse> authentificate(@RequestBody AuthentificationRequest request){
-        return ResponseEntity.ok(authService.authenticate(request));
     }
 
 

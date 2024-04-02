@@ -5,19 +5,20 @@ import com.pi.users.entities.User;
 import com.pi.users.services.UserServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.UUID;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 @RestController
@@ -86,15 +87,27 @@ public class UserController {
         return userService.searchByFirstName(firstName);
     }
 
-    @GetMapping("/{userId}/image")
-    public ResponseEntity<byte[]> getUserImage(@PathVariable Long userId) {
-        User user = userService.getUserById(userId);
-        byte[] imageBytes = user.getImage();
-        String contentType = "image/png";
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(imageBytes);
+
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<?> getUserImage(@PathVariable Long id) {
+        try {
+            byte[] imageData = userService.getUserImage(id);
+            ByteArrayResource imageResource = new ByteArrayResource(imageData);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .body(imageResource);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
+
+
+
+
+
+
 
 
 

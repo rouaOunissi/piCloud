@@ -59,8 +59,6 @@ public class UserServiceImpl implements UserServices {
                            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
-
-
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
@@ -75,9 +73,7 @@ public class UserServiceImpl implements UserServices {
 
             byte[] imageBytes = image.getBytes();
             user.setImage(imageBytes);
-
         }
-
         return userRepository.save(user);
     }
 
@@ -103,6 +99,13 @@ public class UserServiceImpl implements UserServices {
     @Override
     public List<User> searchByFirstName(String firstName) {
         return userRepository.findByFirstNameContaining(firstName);
+    }
+
+    @Override
+    public byte[] getUserImage(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+        return user.getImage();
     }
 
 

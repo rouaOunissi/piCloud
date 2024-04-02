@@ -30,6 +30,7 @@ public class User implements UserDetails,Serializable {
     private int level ;
     private int numTel ;
     @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] image;
     @Enumerated(EnumType.STRING)
     private Role role;

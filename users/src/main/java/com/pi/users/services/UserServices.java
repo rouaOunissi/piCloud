@@ -27,7 +27,9 @@ public interface UserServices {
      User getUserById(Long id);
 
      List<User> findAll() ;
-     public List<User> searchByFirstName(String firstName);
+     List<User> searchByFirstName(String firstName);
+
+     byte[] getUserImage(Long id) ;
 
 
 
