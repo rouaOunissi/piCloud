@@ -37,6 +37,17 @@ public class User implements UserDetails,Serializable {
     @Enumerated(EnumType.STRING)
     private Speciality speciality ;
 
+    @Column(name = "confirmation_token")
+    private String confirmationToken;
+
+    @Column(name = "is_enabled")
+    private boolean isEnabled = false;
+
+
+
+
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,6 +76,7 @@ public class User implements UserDetails,Serializable {
 
     @Override
     public boolean isEnabled() {
-        return true;
+
+        return this.isEnabled;
     }
 }

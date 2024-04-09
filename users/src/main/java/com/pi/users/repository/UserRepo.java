@@ -16,4 +16,7 @@ public interface UserRepo extends JpaRepository<User,Long> {
     User findByRole(Role role);
 
     List<User> findByFirstNameContaining(String firstName);
+    Optional<User> findByConfirmationToken(String confirmationToken);
+
+
 }

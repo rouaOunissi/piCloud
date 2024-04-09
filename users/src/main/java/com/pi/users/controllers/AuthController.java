@@ -3,6 +3,7 @@ package com.pi.users.controllers;
 import com.pi.users.entities.Role;
 import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
+import com.pi.users.repository.UserRepo;
 import com.pi.users.services.UserServices;
 import com.pi.users.servicesImpl.AuthService;
 import org.springframework.core.io.Resource;
@@ -41,6 +42,8 @@ public class AuthController {
 
     @Autowired
     private UserServices userService;
+    @Autowired
+    private UserRepo userRepo ;
 
 
 
@@ -126,6 +129,35 @@ public class AuthController {
             throw new RuntimeException("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/confirm")
+    public ResponseEntity<?> confirmRegistration(@RequestParam("token") String token) {
+        Optional<User> userOptional = userRepo.findByConfirmationToken(token);
+
+        if (!userOptional.isPresent()) {
+            return ResponseEntity.badRequest().body("Invalid token.");
+        }
+
+        User user = userOptional.get();
+        User u = userService.getUserById(user.getIdUser());
+
+        if (!u.isEnabled()) {
+
+            user.setEnabled(true);
+            user.setConfirmationToken(null);
+            userRepo.save(user);
+
+            return ResponseEntity.ok("Account confirmed successfully!");
+        } else {
+
+            return ResponseEntity.badRequest().body("Account is already confirmed or token is no longer valid.");
+        }
+
+    }
+
+
+
+
 
 
 
