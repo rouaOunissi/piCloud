@@ -5,6 +5,7 @@ import com.pi.projet.DTO.RequestProjet2;
 import com.pi.projet.DTO.ResponseProjet;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.entities.Projet;
+import com.pi.projet.feign.UserClient;
 import com.pi.projet.repositories.ProjetRepo;
 import jakarta.ws.rs.PathParam;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.List;
 public class ProjetController {
 
     private final ProjetService projetService;
+    private final UserClient userClient;
 
     @PostMapping
     public ResponseEntity<?> createProject(@RequestBody RequestProjet project) {
@@ -109,6 +111,18 @@ public class ProjetController {
     @PutMapping("/closeProjet/{id}")
     public ResponseEntity<?> closeProjet(@PathVariable ("id") Long id){
         return projetService.closeProjet(id);
+    }
+
+    @GetMapping("/users/{id}/email")
+    public ResponseEntity<String> getEmailById(@PathVariable Long id) {
+        try {
+            // Use the Feign client to fetch the email
+            ResponseEntity<String> response = userClient.findEmailById(id);
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            // Handle the exception as needed
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching email");
+        }
     }
 
 

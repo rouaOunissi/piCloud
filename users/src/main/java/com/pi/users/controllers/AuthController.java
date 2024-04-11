@@ -153,9 +153,26 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Account is already confirmed or token is no longer valid.");
         }
 
+
+
     }
 
 
+    @GetMapping("/findEmail/{id}")
+    public ResponseEntity<String> findEmailById(@PathVariable Long id) {
+        return userService.findEmailById(id)
+                .map(email -> ResponseEntity.ok().body(email))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/check-enabled")
+    public ResponseEntity<?> isUserEnabled(@RequestParam String email) {
+        Boolean isEnabled = userService.checkUserEnabled(email);
+        if (isEnabled == null) {
+            return ResponseEntity.badRequest().body("User with email " + email + " not found.");
+        }
+        return ResponseEntity.ok(isEnabled);
+    }
 
 
 

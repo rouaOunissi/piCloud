@@ -3,13 +3,17 @@ package com.pi.projet.ServiceImp;
 import com.pi.projet.DTO.*;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.Services.RequestService;
+import com.pi.projet.email.EmailService;
 import com.pi.projet.entities.ProjectStatus;
 import com.pi.projet.entities.Projet;
 import com.pi.projet.entities.Request;
 import com.pi.projet.entities.RequestStatus;
+import com.pi.projet.feign.UserClient;
 import com.pi.projet.repositories.ProjetRepo;
 import com.pi.projet.repositories.RequestRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +28,11 @@ public class RequestServiceImp implements RequestService {
     private final RequestRepo requestRepo;
     private final ProjetRepo projetRepo;
     private final ProjetService projetService;
+    @Autowired
+    private UserClient userClient;
+    @Autowired
+    private EmailService emailService;
+
 
 
     @Override
@@ -75,7 +84,33 @@ public class RequestServiceImp implements RequestService {
             Projet projet= request1.getProject();
             projet.setStatus(ProjectStatus.CLOSED);
             projetRepo.save(projet);
-            return ResponseEntity.ok("Request Accepted ! ");
+
+            // Récupérer l'e-mail de l'encadreur
+            Request requestt = request.get();
+            Long encadreurId = requestt.getEncadreurId();
+            ResponseEntity<String> responseEntity = userClient.findEmailById(encadreurId);
+
+            // Récupérer l'e-mail de créateur
+            Long idCreator = requestt.getProject().getCreatorId();
+            ResponseEntity<String> CreatorEmail = userClient.findEmailById(idCreator);
+            String creator = CreatorEmail.getBody().toString();
+            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
+
+
+
+                String email = responseEntity.getBody();
+                String subject = "Demande Acceptée";
+                String content = "Votre demande pour le projet " + projet.getTitle() + " a été acceptée."  + " veuillez contacter "+ creator;
+                emailService.sendEmail(email, subject, content);
+
+
+                return ResponseEntity.ok("Request Accepted !");
+            } else {
+                // Handle the case where the email could not be retrieved
+                return ResponseEntity.status(responseEntity.getStatusCode()).body("Could not retrieve email");
+            }
+
+
 
         }
         else

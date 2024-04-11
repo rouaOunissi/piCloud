@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserServices {
 
@@ -30,6 +31,9 @@ public interface UserServices {
      List<User> searchByFirstName(String firstName);
 
      byte[] getUserImage(Long id) ;
+
+     public Optional<String> findEmailById(Long id);
+     public Boolean checkUserEnabled(String email);
 
 
 

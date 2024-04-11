@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserServices {
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserServices {
 
 
 
-  /*  @PostConstruct
+    @PostConstruct
     public void createAdminAccount(){
         User adminAccount = userRepo.findByRole(Role.ADMIN);
         if(adminAccount==null) {
@@ -41,11 +42,12 @@ public class UserServiceImpl implements UserServices {
             adminAccount.setNumTel(20369845);
             adminAccount.setRole(Role.ADMIN);
             adminAccount.setSpeciality(Speciality.ARCTIC);
+            adminAccount.setEnabled(true);
             userRepository.save(adminAccount);
         }
             System.out.println("admin account created successfuly");
 
-        }*/
+        }
 
     @Override
     public User updateUser(Long id,
@@ -106,6 +108,17 @@ public class UserServiceImpl implements UserServices {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
         return user.getImage();
+    }
+
+    @Override
+    public Optional<String> findEmailById(Long id) {
+        return userRepository.findEmailById(id);
+    }
+
+    @Override
+    public Boolean checkUserEnabled(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        return user.map(User::isEnabled).orElse(null);
     }
 
 
