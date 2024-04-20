@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projets")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // Allows cross-origin requests from your Angular app
+//@CrossOrigin(origins = "*") // Allows cross-origin requests from your Angular app
 
 public class ProjetController {
 
@@ -124,6 +124,7 @@ public class ProjetController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching email");
         }
     }
+
 
 
 

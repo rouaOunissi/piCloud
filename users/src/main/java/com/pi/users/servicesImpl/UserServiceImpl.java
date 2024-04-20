@@ -1,11 +1,18 @@
 package com.pi.users.servicesImpl;
 
+import com.pi.users.Dto.UserInterestDTO;
+import com.pi.users.email.EmailSender;
+import com.pi.users.entities.Interest;
 import com.pi.users.entities.Role;
 import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
+import com.pi.users.repository.InterestRepository;
 import com.pi.users.repository.UserRepo;
 import com.pi.users.services.UserServices;
 import jakarta.annotation.PostConstruct;
+import jakarta.mail.MessagingException;
+import jakarta.ws.rs.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,11 +20,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserServices {
+
+
 
     @Autowired
     private  UserRepo userRepo ;
@@ -26,6 +36,12 @@ public class UserServiceImpl implements UserServices {
 
     @Autowired
     private UserRepo userRepository;
+
+    @Autowired
+    private  EmailSender emailSender ;
+
+    @Autowired
+    private InterestRepository interestRepository;
 
 
 
@@ -45,7 +61,7 @@ public class UserServiceImpl implements UserServices {
             adminAccount.setEnabled(true);
             userRepository.save(adminAccount);
         }
-            System.out.println("admin account created successfuly");
+            log.info("admin account created successfuly");
 
         }
 
@@ -120,6 +136,57 @@ public class UserServiceImpl implements UserServices {
         Optional<User> user = userRepository.findByEmail(email);
         return user.map(User::isEnabled).orElse(null);
     }
+
+    @Override
+    public String forgotPassword(String email) throws MessagingException {
+
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        emailSender.sendSetPasswordEmail(email);
+
+        return "Please check your email to set a new password ";
+    }
+
+    @Override
+    public String setPassword(String email, String newPassword) {
+        Optional<User> optionalUser = userRepo.findByEmail(email);
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            String encryptedPassword =passwordEncoder.encode(newPassword);
+            user.setPassword(encryptedPassword);
+            userRepo.save(user);
+
+            return "Password updated successfully.";
+        } else {
+            return "No user found with that email address.";
+        }
+    }
+
+
+
+    @Override
+    public UserInterestDTO updateUserInterests(Long userId, Set<Long> interestIds) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        Set<Interest> interests = interestIds.stream()
+                .map(interestId -> interestRepository.findById(interestId)
+                        .orElseThrow(() -> new NotFoundException("Interest not found with id: " + interestId)))
+                .collect(Collectors.toSet());
+
+        user.setInterests(interests);
+        User updatedUser = userRepository.save(user);
+
+        List<String> interestNames = updatedUser.getInterests().stream()
+                .map(Interest::getName)
+                .collect(Collectors.toList());
+
+        return new UserInterestDTO(updatedUser.getIdUser(), updatedUser.getEmail(), interestNames);
+    }
+
+
+
 
 
 }

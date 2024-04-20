@@ -10,7 +10,8 @@ import com.pi.projet.entities.ProjectStatus;
 import com.pi.projet.entities.Projet;
 import com.pi.projet.repositories.CategoryRepo;
 import com.pi.projet.repositories.ProjetRepo;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -215,6 +216,7 @@ public class ProjetServiceImp implements ProjetService {
         else
             return ResponseEntity.ok(projets.stream().map(this::mapModelToDTO).toList());
     }
+
 
 
     public Projet mapDTOToModel (RequestProjet requestProjet){

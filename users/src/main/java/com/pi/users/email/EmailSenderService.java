@@ -11,6 +11,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Service
 @AllArgsConstructor
 public class EmailSenderService implements EmailSender{
@@ -38,4 +41,22 @@ public class EmailSenderService implements EmailSender{
             throw new IllegalStateException("failed to send email");
         }
     }
+
+    @Override
+    public void sendSetPasswordEmail(String email) throws MessagingException {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setSubject("Set Password");
+
+        String link = "http://localhost:4200/front/set-password?email=" + URLEncoder.encode(email, StandardCharsets.UTF_8);
+        mimeMessageHelper.setText(
+                "<div>" +
+                        "<a href=\"" + link + "\" target=\"_blank\">click Link to set password</a>" +
+                        "</div>", true);
+
+        mailSender.send(mimeMessage);
+    }
+
+
 }

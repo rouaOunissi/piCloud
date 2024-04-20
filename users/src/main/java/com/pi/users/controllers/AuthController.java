@@ -1,11 +1,16 @@
 package com.pi.users.controllers;
 
+import com.pi.users.Dto.PasswordDto;
+import com.pi.users.entities.Interest;
 import com.pi.users.entities.Role;
 import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
 import com.pi.users.repository.UserRepo;
+import com.pi.users.services.InterestService;
 import com.pi.users.services.UserServices;
 import com.pi.users.servicesImpl.AuthService;
+import jakarta.mail.MessagingException;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -29,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -173,6 +179,26 @@ public class AuthController {
         }
         return ResponseEntity.ok(isEnabled);
     }
+
+    @PutMapping("/forgot-password")
+    public ResponseEntity<String> forgitPassword(@RequestParam String email) throws MessagingException {
+        return new ResponseEntity<>(userService.forgotPassword(email),HttpStatus.OK) ;
+    }
+
+    @PutMapping("/set-password")
+    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestBody PasswordDto passwordDto){
+        return new ResponseEntity<>(userService.setPassword(email, passwordDto.getNewPassword()), HttpStatus.OK);
+    }
+
+    @Autowired
+    private InterestService interestService;
+
+
+
+
+
+
+
 
 
 

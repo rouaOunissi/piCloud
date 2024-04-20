@@ -1,5 +1,6 @@
 package com.pi.users.controllers;
 
+import com.pi.users.Dto.UserInterestDTO;
 import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
 import com.pi.users.services.UserServices;
@@ -15,6 +16,8 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -102,6 +105,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+
+
+    @PostMapping("/{userId}/interests")
+    public ResponseEntity<UserInterestDTO> updateUserInterests(@PathVariable Long userId, @RequestBody Set<Long> interestIds) {
+        UserInterestDTO userDTO = userService.updateUserInterests(userId, interestIds);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    }
+
 
 
 

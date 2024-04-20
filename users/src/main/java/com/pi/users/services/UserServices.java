@@ -1,14 +1,17 @@
 package com.pi.users.services;
 
 
+import com.pi.users.Dto.UserInterestDTO;
 import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
+import jakarta.mail.MessagingException;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserServices {
 
@@ -36,6 +39,10 @@ public interface UserServices {
      public Boolean checkUserEnabled(String email);
 
 
+    String forgotPassword(String email) throws MessagingException;
+
+     String setPassword(String email, String newPassword);
 
 
+    public UserInterestDTO updateUserInterests(Long userId, Set<Long> interestIds);
 }
