@@ -1,17 +1,13 @@
 package com.pi.users.servicesImpl;
 
-import com.pi.users.Dto.UserInterestDTO;
 import com.pi.users.email.EmailSender;
-import com.pi.users.entities.Interest;
 import com.pi.users.entities.Role;
 import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
-import com.pi.users.repository.InterestRepository;
 import com.pi.users.repository.UserRepo;
 import com.pi.users.services.UserServices;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
-import jakarta.ws.rs.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,8 +35,6 @@ public class UserServiceImpl implements UserServices {
     @Autowired
     private  EmailSender emailSender ;
 
-    @Autowired
-    private InterestRepository interestRepository;
 
 
 
@@ -165,25 +158,7 @@ public class UserServiceImpl implements UserServices {
 
 
 
-    @Override
-    public UserInterestDTO updateUserInterests(Long userId, Set<Long> interestIds) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
-        Set<Interest> interests = interestIds.stream()
-                .map(interestId -> interestRepository.findById(interestId)
-                        .orElseThrow(() -> new NotFoundException("Interest not found with id: " + interestId)))
-                .collect(Collectors.toSet());
-
-        user.setInterests(interests);
-        User updatedUser = userRepository.save(user);
-
-        List<String> interestNames = updatedUser.getInterests().stream()
-                .map(Interest::getName)
-                .collect(Collectors.toList());
-
-        return new UserInterestDTO(updatedUser.getIdUser(), updatedUser.getEmail(), interestNames);
-    }
 
 
 

@@ -45,10 +45,6 @@ public class User implements UserDetails,Serializable {
     @Column(name = "is_enabled")
     private boolean isEnabled = false;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Interest> interests;
-
-
 
 
 

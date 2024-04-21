@@ -44,5 +44,4 @@ public interface UserServices {
      String setPassword(String email, String newPassword);
 
 
-    public UserInterestDTO updateUserInterests(Long userId, Set<Long> interestIds);
 }

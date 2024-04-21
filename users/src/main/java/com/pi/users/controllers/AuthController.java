@@ -1,42 +1,30 @@
 package com.pi.users.controllers;
 
 import com.pi.users.Dto.PasswordDto;
-import com.pi.users.entities.Interest;
-import com.pi.users.entities.Role;
 import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
 import com.pi.users.repository.UserRepo;
-import com.pi.users.services.InterestService;
 import com.pi.users.services.UserServices;
 import com.pi.users.servicesImpl.AuthService;
 import jakarta.mail.MessagingException;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users/auth")
@@ -189,10 +177,6 @@ public class AuthController {
     public ResponseEntity<String> setPassword(@RequestParam String email, @RequestBody PasswordDto passwordDto){
         return new ResponseEntity<>(userService.setPassword(email, passwordDto.getNewPassword()), HttpStatus.OK);
     }
-
-    @Autowired
-    private InterestService interestService;
-
 
 
 

@@ -108,11 +108,7 @@ public class UserController {
 
 
 
-    @PostMapping("/{userId}/interests")
-    public ResponseEntity<UserInterestDTO> updateUserInterests(@PathVariable Long userId, @RequestBody Set<Long> interestIds) {
-        UserInterestDTO userDTO = userService.updateUserInterests(userId, interestIds);
-        return new ResponseEntity<>(userDTO, HttpStatus.OK);
-    }
+
 
 
 
