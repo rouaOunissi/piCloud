@@ -1,5 +1,6 @@
 package com.pi.projet.ServiceImp;
 
+import com.pi.projet.DTO.CategoryStats;
 import com.pi.projet.DTO.MessageResponse;
 import com.pi.projet.DTO.ResponseCategory;
 import com.pi.projet.Services.CategoryService;
@@ -70,6 +71,11 @@ public class CategoryServiceImp implements CategoryService {
        }
        else
            return ResponseEntity.badRequest().body("Category Do Not Exist");
+    }
+
+    @Override
+    public List<CategoryStats> getProjectCategoryStatistics() {
+        return categoryRepo.countProjectsByCategory();
     }
 
     public ResponseCategory mapModelToDTO(Category category){

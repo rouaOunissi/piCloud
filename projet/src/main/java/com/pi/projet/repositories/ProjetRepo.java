@@ -31,4 +31,5 @@ public interface ProjetRepo extends JpaRepository<Projet,Long> {
 
     @Query(value = "SELECT * FROM projet as p where p.status='DECLINED'",nativeQuery = true)
     public List<Projet> getAllAdminDeclined();
+
 }

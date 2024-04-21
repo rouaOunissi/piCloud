@@ -1,5 +1,6 @@
 package com.pi.projet.Controllers;
 
+import com.pi.projet.DTO.CategoryStats;
 import com.pi.projet.DTO.RequestProjet;
 import com.pi.projet.DTO.ResponseCategory;
 import com.pi.projet.DTO.ResponseProjet;
@@ -44,5 +45,11 @@ public class CategoryController {
     @DeleteMapping("{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable("id") Long id){
         return categoryService.deleteCategory(id);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<List<CategoryStats>> getCategoryStatistics() {
+        List<CategoryStats> stats = categoryService.getProjectCategoryStatistics();
+        return ResponseEntity.ok(stats);
     }
 }
