@@ -23,5 +23,8 @@ public interface UserRepo extends JpaRepository<User,Long> {
     @Query("SELECT u.email FROM User u WHERE u.idUser = :id")
     Optional<String> findEmailById(@Param("id") Long id);
 
+    @Query("SELECT FUNCTION('MONTH', u.registrationDate) AS month, COUNT(u) AS count FROM User u GROUP BY FUNCTION('MONTH', u.registrationDate)")
+    List<Object[]> countUsersByRegistrationMonth();
+
 
 }

@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,9 @@ public class User implements UserDetails,Serializable {
 
     @Column(name = "is_enabled")
     private boolean isEnabled = false;
+
+    @Column(name = "registration_date")
+    private LocalDate registrationDate = LocalDate.now();
 
 
 

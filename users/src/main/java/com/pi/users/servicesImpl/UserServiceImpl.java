@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -52,6 +53,8 @@ public class UserServiceImpl implements UserServices {
             adminAccount.setRole(Role.ADMIN);
             adminAccount.setSpeciality(Speciality.ARCTIC);
             adminAccount.setEnabled(true);
+            adminAccount.setRegistrationDate(LocalDate.now());
+
             userRepository.save(adminAccount);
         }
             log.info("admin account created successfuly");
@@ -156,12 +159,10 @@ public class UserServiceImpl implements UserServices {
         }
     }
 
-
-
-
-
-
-
+    @Override
+    public List<Object[]> getUsersRegistrationStats() {
+        return userRepository.countUsersByRegistrationMonth();
+    }
 
 
 }

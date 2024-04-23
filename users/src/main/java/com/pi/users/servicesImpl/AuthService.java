@@ -22,6 +22,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
 import java.util.UUID;
 
 import java.io.IOException;
@@ -70,7 +72,8 @@ public class AuthService {
                 .level(level)
                 .numTel(numTel)
                 .speciality(speciality)
-                .role(Role.STUDENT) // Assign a role if needed
+                .role(Role.STUDENT)
+                .registrationDate(LocalDate.now())// Assign a role if needed
                 .build();
 
         if (image != null && !image.isEmpty()) {

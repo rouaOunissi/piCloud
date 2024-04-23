@@ -42,6 +42,7 @@ public interface UserServices {
     String forgotPassword(String email) throws MessagingException;
 
      String setPassword(String email, String newPassword);
+    public List<Object[]> getUsersRegistrationStats();
 
 
 }
