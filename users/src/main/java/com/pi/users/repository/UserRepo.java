@@ -1,6 +1,7 @@
 package com.pi.users.repository;
 
 import com.pi.users.entities.Role;
+import com.pi.users.entities.Speciality;
 import com.pi.users.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,6 +26,8 @@ public interface UserRepo extends JpaRepository<User,Long> {
 
     @Query("SELECT FUNCTION('MONTH', u.registrationDate) AS month, COUNT(u) AS count FROM User u GROUP BY FUNCTION('MONTH', u.registrationDate)")
     List<Object[]> countUsersByRegistrationMonth();
+
+    List<User> findBySpeciality(Speciality speciality);
 
 
 }

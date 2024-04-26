@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projets")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "*") // Allows cross-origin requests from your Angular app
+@CrossOrigin(origins = "http://localhost:4200")
 
 public class ProjetController {
 

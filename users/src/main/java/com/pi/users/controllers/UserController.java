@@ -21,7 +21,7 @@ import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-
+import org.springframework.web.server.ResponseStatusException;
 
 
 @RestController
@@ -109,6 +109,25 @@ public class UserController {
     @GetMapping("/user-registration-stats")
     public List<Object[]> getUserRegistrationStats() {
         return userService.getUsersRegistrationStats();
+    }
+
+
+    @PutMapping("/{id}/image")
+    public ResponseEntity<?> uploadUserImage(@PathVariable Long id,
+                                             @RequestParam("image") MultipartFile image) {
+        try {
+            User updatedUser = userService.updateUserImage(id, image);
+            return ResponseEntity.ok("Image updated successfully for user with ID: " + updatedUser.getIdUser());
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to save image", e);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/users/by-speciality")
+    public List<User> getUsersBySpeciality(@RequestParam Speciality speciality) {
+        return userService.getUsersBySpeciality(speciality);
     }
 
 

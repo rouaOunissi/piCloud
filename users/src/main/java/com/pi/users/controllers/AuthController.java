@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -174,9 +176,13 @@ public class AuthController {
     }
 
     @PutMapping("/set-password")
-    public ResponseEntity<String> setPassword(@RequestParam String email, @RequestBody PasswordDto passwordDto){
-        return new ResponseEntity<>(userService.setPassword(email, passwordDto.getNewPassword()), HttpStatus.OK);
+    public ResponseEntity<Map<String, String>> setPassword(@RequestParam String email, @RequestBody PasswordDto passwordDto){
+        String message = userService.setPassword(email, passwordDto.getNewPassword());
+        Map<String, String> response = new HashMap<>();
+        response.put("message", message);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 
 

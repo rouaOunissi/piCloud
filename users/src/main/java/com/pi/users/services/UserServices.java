@@ -44,5 +44,8 @@ public interface UserServices {
      String setPassword(String email, String newPassword);
     public List<Object[]> getUsersRegistrationStats();
 
+    public User updateUserImage(Long userId, MultipartFile imageFile) throws IOException;
+    public List<User> getUsersBySpeciality(Speciality speciality);
+
 
 }

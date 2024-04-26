@@ -10,6 +10,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,9 +39,11 @@ public class UserServiceImpl implements UserServices {
     private  EmailSender emailSender ;
 
 
+    @EventListener
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        createAdminAccount();
+    }
 
-
-    @PostConstruct
     public void createAdminAccount(){
         User adminAccount = userRepo.findByRole(Role.ADMIN);
         if(adminAccount==null) {
@@ -162,6 +166,33 @@ public class UserServiceImpl implements UserServices {
     @Override
     public List<Object[]> getUsersRegistrationStats() {
         return userRepository.countUsersByRegistrationMonth();
+    }
+
+    public User updateUserImage(Long userId, MultipartFile imageFile) throws IOException {
+        // Find the user by ID
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) {
+            try {
+                throw new Exception("User not found ");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        User user = userOptional.get();
+
+        // Check if the image is not empty and update the user's image
+        if (imageFile != null && !imageFile.isEmpty()) {
+            byte[] imageBytes = imageFile.getBytes();
+            user.setImage(imageBytes);
+            userRepository.save(user); // Save the updated user
+        }
+
+        return user;
+    }
+
+    @Override
+    public List<User> getUsersBySpeciality(Speciality speciality) {
+        return userRepository.findBySpeciality(speciality);
     }
 
 

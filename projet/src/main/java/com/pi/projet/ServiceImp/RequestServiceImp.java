@@ -33,6 +33,9 @@ public class RequestServiceImp implements RequestService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    WebSocketService webSocketService ;
+
 
 
     @Override
@@ -104,13 +107,17 @@ public class RequestServiceImp implements RequestService {
                 emailService.sendEmail(email, subject, content);
 
 
-                return ResponseEntity.ok("Request Accepted !");
+                // Optionally, send a notification to the encadreur's WebSocket session if they are online
+                // This would require having a WebSocketService as shown in the previous messages
+                webSocketService.sendNotification(encadreurId.toString(), "Votre demande pour le projet " + projet.getTitle() + " a été acceptée.");
+
+
+
+                return ResponseEntity.ok("Request accepted and the encadreur has been notified!");
             } else {
                 // Handle the case where the email could not be retrieved
                 return ResponseEntity.status(responseEntity.getStatusCode()).body("Could not retrieve email");
             }
-
-
 
         }
         else

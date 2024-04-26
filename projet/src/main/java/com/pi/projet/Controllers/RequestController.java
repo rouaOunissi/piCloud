@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/projets/requests")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class RequestController {
 
     private final RequestService requestService;
