@@ -2,7 +2,6 @@ package com.pi.event.services;
 
 import com.pi.event.entities.Event;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface EventService {
@@ -16,5 +15,5 @@ public interface EventService {
 
     void delete(Integer id);
 
-    boolean updateEvent(Integer id , Event event) ;
+    public Event updateEvent(Event event);
 }

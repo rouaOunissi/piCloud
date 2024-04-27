@@ -1,19 +1,18 @@
 package com.pi.projet.ServiceImp;
 
-import com.pi.projet.DTO.*;
+import com.pi.projet.DTO.RequestRequest;
+import com.pi.projet.DTO.ResponseProjet;
+import com.pi.projet.DTO.ResponseRequest;
+import com.pi.projet.DTO.ResponseRequest2;
 import com.pi.projet.Services.ProjetService;
 import com.pi.projet.Services.RequestService;
-import com.pi.projet.email.EmailService;
 import com.pi.projet.entities.ProjectStatus;
 import com.pi.projet.entities.Projet;
 import com.pi.projet.entities.Request;
 import com.pi.projet.entities.RequestStatus;
-import com.pi.projet.feign.UserClient;
 import com.pi.projet.repositories.ProjetRepo;
 import com.pi.projet.repositories.RequestRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -28,25 +27,17 @@ public class RequestServiceImp implements RequestService {
     private final RequestRepo requestRepo;
     private final ProjetRepo projetRepo;
     private final ProjetService projetService;
-    @Autowired
-    private UserClient userClient;
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    WebSocketService webSocketService ;
-
 
 
     @Override
     public ResponseEntity<?> createRequest( RequestRequest requestRequest) {
-       Optional <Projet> projet = projetRepo.findById(requestRequest.getProjectId());
-       if(projet.isPresent() && requestRequest.getEncadreurId()!=null && requestRequest.getMessage()!=null && requestRequest.getProjectId()!=null){
+       Optional <Projet> projet = projetRepo.findById(requestRequest.getProject_id());
+       if(projet.isPresent() && requestRequest.getEncadreurId()!=null && requestRequest.getMessage()!=null && requestRequest.getProject_id()!=null){
            Projet  projet1=projet.get();
            Request request = this.mapDTOtoModel(requestRequest);
            request.setProject(projet1);
            requestRepo.save(request);
-           return ResponseEntity.ok().body(new MessageResponse("Applied successfully "));
+           return  ResponseEntity.ok("Request have been Sent !");
        }
        else
            return ResponseEntity.badRequest().body("Bad Request !");
@@ -66,11 +57,11 @@ public class RequestServiceImp implements RequestService {
     }
 
     @Override
-    public ResponseEntity<?> getRequestByUserId(Long id) {
+    public ResponseEntity<?> getRequestByEncadreurId(Long id) {
     List<ResponseRequest2> responseRequest2s = requestRepo.getRequestsByEncadreurId(id);
 
     if (responseRequest2s.isEmpty())
-        return ResponseEntity.ok("No requests yet !");
+        return ResponseEntity.badRequest().body("You Have Not Make Any Requests Yet !");
     else {
         return ResponseEntity.ok(responseRequest2s);
     }
@@ -87,37 +78,7 @@ public class RequestServiceImp implements RequestService {
             Projet projet= request1.getProject();
             projet.setStatus(ProjectStatus.CLOSED);
             projetRepo.save(projet);
-
-            // Récupérer l'e-mail de l'encadreur
-            Request requestt = request.get();
-            Long encadreurId = requestt.getEncadreurId();
-            ResponseEntity<String> responseEntity = userClient.findEmailById(encadreurId);
-
-            // Récupérer l'e-mail de créateur
-            Long idCreator = requestt.getProject().getCreatorId();
-            ResponseEntity<String> CreatorEmail = userClient.findEmailById(idCreator);
-            String creator = CreatorEmail.getBody().toString();
-            if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
-
-
-
-                String email = responseEntity.getBody();
-                String subject = "Demande Acceptée";
-                String content = "Votre demande pour le projet " + projet.getTitle() + " a été acceptée."  + " veuillez contacter "+ creator;
-                emailService.sendEmail(email, subject, content);
-
-
-                // Optionally, send a notification to the encadreur's WebSocket session if they are online
-                // This would require having a WebSocketService as shown in the previous messages
-                webSocketService.sendNotification(encadreurId.toString(), "Votre demande pour le projet " + projet.getTitle() + " a été acceptée.");
-
-
-
-                return ResponseEntity.ok("Request accepted and the encadreur has been notified!");
-            } else {
-                // Handle the case where the email could not be retrieved
-                return ResponseEntity.status(responseEntity.getStatusCode()).body("Could not retrieve email");
-            }
+            return ResponseEntity.ok("Request Accepted ! ");
 
         }
         else

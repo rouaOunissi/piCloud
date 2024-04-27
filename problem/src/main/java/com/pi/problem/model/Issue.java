@@ -25,9 +25,7 @@ public class Issue implements Serializable {
     private long id_user;
     private String issueTitle;
     private String issueDescription;
-    @Lob
-    @Column(name = "imageData",length = 100000 ,nullable = true)
-    private byte[] uriImage;
+    private String uriImage;
     private Date creationDate;
     @Enumerated(EnumType.STRING)
     private Priority priority;

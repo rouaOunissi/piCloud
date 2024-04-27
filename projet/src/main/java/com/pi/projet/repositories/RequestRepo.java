@@ -15,12 +15,6 @@ public interface RequestRepo extends JpaRepository<Request,Long> {
 
     public List<Request> getRequestsByProject(Projet projet);
 
-    @Query("SELECT new com.pi.projet.DTO.ResponseRequest2(r.id,p.title,r.message,r.status) FROM Request r JOIN r.project p WHERE r.encadreurId = :encadreurId")
+    @Query("SELECT new com.pi.projet.DTO.ResponseRequest2(p.title, r.status) FROM Request r JOIN r.project p WHERE r.encadreurId = :encadreurId")
     public List<ResponseRequest2> getRequestsByEncadreurId(@Param("encadreurId")Long id);
-
-
-    @Query("SELECT new com.pi.projet.DTO.ResponseRequest2(r.id,p.title, r.message, r.status)  FROM Request r JOIN r.project p WHERE p.creatorId = :creatorId ")
-    public List<ResponseRequest2> findRequestsByCreatorId(@Param("creatorId") Long creatorId);
-
-
 }

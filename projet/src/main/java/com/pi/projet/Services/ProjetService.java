@@ -1,7 +1,6 @@
 package com.pi.projet.Services;
 
 import com.pi.projet.DTO.RequestProjet;
-import com.pi.projet.DTO.RequestProjet2;
 import com.pi.projet.DTO.ResponseProjet;
 import com.pi.projet.entities.Projet;
 import org.springframework.http.ResponseEntity;
@@ -14,17 +13,7 @@ public interface ProjetService {
 
     public ResponseEntity<List<ResponseProjet>> findProjetByCategory_Id(Long id);
 
-    public List<ResponseProjet> getAllAdminAcceptedProjects();
-    public List<ResponseProjet> getAllAdminPendingProjects();
-
-    public List<ResponseProjet> getAllAdminDeclinedProjects();
-
-    public ResponseEntity<?> adminAcceptProject(Long id);
-    public ResponseEntity<?> adminDeclineProject(Long id);
-
-    public ResponseEntity<?> updateProject(Long id, RequestProjet2 requestProjet2);
-
-
+    public List<ResponseProjet> getAllProjects();
 
     public ResponseEntity<?> updateProjetTitle(Long id, String title ) ;
 
@@ -43,8 +32,6 @@ public interface ProjetService {
     public ResponseEntity<?> closeProjet(Long id);
 
     public ResponseEntity<?> getUserProjets(Long id) ;
-
-
 
 
 

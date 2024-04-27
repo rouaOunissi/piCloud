@@ -1,7 +1,8 @@
 server:
   port: 8222
 
-
+jwt:
+  secret: "Z4h5/H39t6gdMbJ0pAfce1EUn0JANtsYJWL9NLxjnGBzh0UZoh5BszZNPoKQoWS2"
 
 spring:
   application:
@@ -9,19 +10,6 @@ spring:
 
   cloud:
     gateway:
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-                  - GET
-                  - POST
-                  - PUT
-                  - DELETE
-                  - OPTION
-            allowedHeaders:
-                  - Content-Type
-            allowCredentials: true
       mvc:
         routes:
           - id: users
@@ -54,7 +42,6 @@ spring:
             uri: http://localhost:9099
             predicates:
               - Path=/api/v1/purchase/**
-
 
 
 

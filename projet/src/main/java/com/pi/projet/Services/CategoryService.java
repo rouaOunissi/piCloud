@@ -1,6 +1,5 @@
 package com.pi.projet.Services;
 
-import com.pi.projet.DTO.CategoryStats;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -10,14 +9,11 @@ public interface CategoryService {
     public ResponseEntity<?> createCategory(String categoryName);
 
 
-    public List<?> getAllCategories();
-
-    public ResponseEntity<?> getAllCategoriesAdmin();
+    public List<String> getAllCategories();
 
     public ResponseEntity<?> updateCategory(Long id,String catName);
 
     public ResponseEntity<?> deleteCategory(Long id );
-    public List<CategoryStats> getProjectCategoryStatistics();
 
 
 

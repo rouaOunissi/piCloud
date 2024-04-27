@@ -1,5 +1,6 @@
-package com.pi.event.config;
+package org.example.purchase.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -7,15 +8,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**") // You can restrict paths with specific ones
-                .allowedOrigins("http://localhost:4200") // The origin of your Angular app
-                .allowedOrigins("http://localhost:8222")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:4200") // Replace with the URL of your Angular app
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
-
 }

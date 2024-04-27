@@ -20,7 +20,6 @@ public class ResponseProjet {
 
 
 
-    private Long id ;
     private String title;
 
     private String description;

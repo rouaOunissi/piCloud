@@ -22,14 +22,4 @@ public interface ProjetRepo extends JpaRepository<Projet,Long> {
     public List<Projet> findClosedProjet();
 
     public List<Projet> findProjetByCreatorId(Long id);
-
-    @Query(value = "SELECT * FROM projet as p where p.status='PENDING'",nativeQuery = true)
-    public List<Projet> getAllAdminPending();
-
-    @Query(value = "SELECT * FROM projet as p where p.status<>'PENDING' and p.status<>'DECLINED'",nativeQuery = true)
-    public List<Projet> getAllAdminAccepted();
-
-    @Query(value = "SELECT * FROM projet as p where p.status='DECLINED'",nativeQuery = true)
-    public List<Projet> getAllAdminDeclined();
-
 }

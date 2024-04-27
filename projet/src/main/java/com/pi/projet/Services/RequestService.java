@@ -9,8 +9,7 @@ public interface RequestService {
 
     public ResponseEntity<?> getRequestByProjetId(Long id);
 
-    public ResponseEntity<?> getRequestByUserId(Long id);
-
+    public ResponseEntity<?> getRequestByEncadreurId(Long id);
 
     public ResponseEntity<?> acceptRequest(Long id);
 

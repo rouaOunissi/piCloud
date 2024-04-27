@@ -1,6 +1,5 @@
 package com.pi.users.entities;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,11 +7,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -32,26 +28,10 @@ public class User implements UserDetails,Serializable {
     private String password ;
     private int level ;
     private int numTel ;
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] image;
     @Enumerated(EnumType.STRING)
     private Role role;
     @Enumerated(EnumType.STRING)
     private Speciality speciality ;
-
-    @Column(name = "confirmation_token")
-    private String confirmationToken;
-
-    @Column(name = "is_enabled")
-    private boolean isEnabled = false;
-
-    @Column(name = "registration_date")
-    private LocalDate registrationDate = LocalDate.now();
-
-
-
-
 
 
     @Override
@@ -81,7 +61,6 @@ public class User implements UserDetails,Serializable {
 
     @Override
     public boolean isEnabled() {
-
-        return this.isEnabled;
+        return true;
     }
 }

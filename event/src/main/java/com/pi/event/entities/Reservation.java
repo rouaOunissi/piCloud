@@ -20,8 +20,6 @@ public class Reservation implements Serializable {
 
     private String description ;
 
-    private Integer nbPlace ;
-
     @JsonIgnore
     @ManyToOne
     private Event event ;
