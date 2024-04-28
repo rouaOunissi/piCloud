@@ -1,12 +1,12 @@
 package com.pi.ressources.Controller;
 
+import com.pi.ressources.Enum.TypeRessource;
 import com.pi.ressources.Services.DownloadService;
 import com.pi.ressources.Services.RessourceService;
 import com.pi.ressources.entities.Download;
 import com.pi.ressources.entities.Ressource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,9 +16,9 @@ import org.springframework.http.HttpStatus;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.io.Files.getFileExtension;
 
@@ -58,7 +58,7 @@ public class DownloadController {
 
     @DeleteMapping("/deleteDownByid/{id}")
     @ResponseBody
-    public String deleteDownload (@PathVariable Long id)
+    public ResponseEntity<?> deleteDownload (@PathVariable Long id)
     {return this.downloadService.deteleDownload(id);}
 
 
@@ -136,6 +136,92 @@ public class DownloadController {
         }
     }
 
+    /**
+     * Section Statistique
+     */
+
+    @GetMapping("/getDownloadsByDay")
+    @ResponseBody
+    public Long getDownloadsByDay()
+    {
+        return this.downloadService.countDownloadsByDay();
+    }
+
+    @GetMapping("/countDownloadsByWeek")
+    @ResponseBody
+    public Long countDownloadsByWeek()
+    {
+        return this.downloadService.countDownloadsByWeek();
+    }
+
+
+    @GetMapping("/getLastWeekDownloads")
+    @ResponseBody
+    public Map<String, Long> getLastWeekDownloads()
+    {
+        return this.downloadService.getLastWeekDownloads();
+    }
+
+    @GetMapping("/getThisWeekDownloads")
+    @ResponseBody
+    public Map<String, Long> getThisWeekDownloads()
+    {
+        return this.downloadService.getThisWeekDownloads();
+    }
+    @GetMapping("/countDownloadsByType/{typeRessource}")
+    @ResponseBody
+    public Long countDownloadsByType(@PathVariable TypeRessource typeRessource)
+    {
+        return this.downloadService.countDownloadsByType(typeRessource);
+    }
+
+    @GetMapping("/totalDownloadsOfTypeExam")
+    @ResponseBody
+    public Long totalDownloadsOfTypeExam()
+    {
+        return this.downloadService.countDownloadsByType(TypeRessource.Examen);
+    }
+    @GetMapping("/totalDownloadsOfTypePosit")
+    @ResponseBody
+    public Long totalDownloadsOfTypePosit()
+    {
+        return this.downloadService.countDownloadsByType(TypeRessource.Posit);
+    }
+
+    @GetMapping("/totalDownloadsOfTypeTD")
+    @ResponseBody
+    public Long totalDownloadsOfTypeTD()
+    {
+        return this.downloadService.countDownloadsByType(TypeRessource.TD);
+    }
+
+    @GetMapping("/totalDownloadsOfTypeTp")
+    @ResponseBody
+    public Long totalDownloadsOfTypeTp()
+    {
+        return this.downloadService.countDownloadsByType(TypeRessource.Tp);
+    }
+
+    @GetMapping("/totalDownloadsOfTypeRapport")
+    @ResponseBody
+    public Long totalDownloadsOfTypeRapport()
+    {
+        return this.downloadService.countDownloadsByType(TypeRessource.Rapport);
+    }
+
+    @GetMapping("/countDownloadsByMonth")
+    @ResponseBody
+    public Map<String, Long> countDownloadsByMonth()
+    {
+        return this.downloadService.countDownloadsByMonth();
+    }
+
+    @GetMapping("/MostDownloadedResource")
+    @ResponseBody
+    public Ressource findMostDownloadedResource()
+    {
+        return this.downloadService.findMostDownloadedResource();
+    }
 
 
 }

@@ -1,11 +1,14 @@
 package com.pi.ressources.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pi.ressources.Dao.ReactionDao;
 import com.pi.ressources.Dao.RessourceDao;
 import com.pi.ressources.Enum.TypeRessource;
 import com.pi.ressources.Services.FileUploadService;
 import com.pi.ressources.Services.RessourceService;
 import com.pi.ressources.ServicesImpl.PDFExtractorService;
+import com.pi.ressources.entities.CalendarLine;
+import com.pi.ressources.entities.Reaction;
 import com.pi.ressources.entities.Ressource;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +44,8 @@ public class RessourceController {
     @Autowired
     private RessourceService ressourceService;
 
-
+    @Resource
+    private ReactionDao reactionDao;
     @Resource
     private RessourceDao ressourceDao;
 
@@ -78,7 +83,21 @@ public class RessourceController {
     }
 
 
+    @GetMapping("/search")
+    public List<Ressource> searchRessourcesByTitre(@RequestParam String titre) {
+        return ressourceService.findByTitreContaining(titre);
+    }
 
+    @GetMapping("/synonyms")
+    public List<Ressource> searchRessourcesBySynonyms(@RequestParam String word) {
+        return ressourceService.searchRessourcesBySynonyms(word);
+    }
+
+
+    @GetMapping("/synonymsSearch")
+    public List<Ressource> searchRessourcesByKeyword(@RequestParam String word) {
+        return ressourceService.searchRessourcesByKeyword(word);
+    }
     @GetMapping("/ressourceByType")
     @ResponseBody
     public List<Ressource> getRessourcesByType(@RequestParam TypeRessource typeRessource)
@@ -96,18 +115,29 @@ public class RessourceController {
 
 
 
-    @PutMapping("/update/{idRessource}")
-    @ResponseBody
-    public Ressource updateRessource(@PathVariable Long idRessource ,@RequestBody Ressource ressource)
-    {
-        return this.ressourceService.updateRessource(idRessource , ressource);
-    }
 
+
+    @PutMapping("/updateRess/{idRessource}")
+    @ResponseBody
+    public ResponseEntity<?> updateRessource(@PathVariable Long idRessource,HttpServletRequest request) {
+        try {
+            MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+            MultipartFile file = multipartRequest.getFile("file");
+            Ressource ressource = objectMapper.readValue(request.getParameter("ressource"), Ressource.class);
+
+            Optional<Ressource> fileSave = ressourceService.updateRessource(idRessource, ressource, file);
+            return ResponseEntity.status(HttpStatus.CREATED).body(fileSave);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+        }
+    }
 
     @DeleteMapping("/deleteRessByid/{id}")
     @ResponseBody
-    public String deleteRessource (@PathVariable Long id)
+    public ResponseEntity<?> deleteRessource (@PathVariable Long id)
     {return this.ressourceService.deteleRessource(id);}
+
 
 
     /***
@@ -219,36 +249,96 @@ public class RessourceController {
         try {
             Ressource ressource = ressourceService.findById(idRessource);
             if (ressource == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\": \"La ressource avec l'ID spécifié n'a pas été trouvée.\"}");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("La ressource avec l'ID spécifié n'a pas été trouvée.");
             }
             String contentType = ressource.getFileType().toLowerCase();
             String content;
 
-
+            // Vérifier le type de fichier
             if ("pdf".equals(contentType)) {
-
+                // Extraction du contenu d'un fichier PDF
                 content = pdfExtractorService.extractTextFromPDF(new FileInputStream(new File("C:/xampp/htdocs/Files/" + ressource.getUrlFile())));
-                return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_PDF)
-                        .body("{\"content\": \"" + content + "\"}");
             } else if ("docx".equals(contentType)) {
-
+                // Extraction du contenu d'un fichier DOCX
                 XWPFDocument docx = new XWPFDocument(new FileInputStream(new File("C:/xampp/htdocs/Files/" + ressource.getUrlFile())));
                 XWPFWordExtractor extractor = new XWPFWordExtractor(docx);
                 content = extractor.getText();
                 extractor.close();
-                return ResponseEntity.ok()
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .body("{\"content\": \"" + content + "\"}");
             } else {
-
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\": \"Le type de fichier n'est pas pris en charge.\"}");
+                // Autres types de fichiers non pris en charge
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Le type de fichier n'est pas pris en charge.");
             }
+
+            return ResponseEntity.ok(content);
         } catch (IOException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Erreur lors de l'extraction du contenu du fichier.\"}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de l'extraction du contenu du fichier.");
         }
     }
+
+    @GetMapping("/searchContent")
+    public ResponseEntity<?> searchContent(@RequestParam String keyword) {
+        try {
+            List<Ressource> matchingRessources = new ArrayList<>();
+
+            // Récupérer toutes les ressources (par exemple)
+            List<Ressource> allRessources = ressourceService.findAll();
+
+            // Parcourir chaque ressource pour extraire et rechercher le contenu
+            for (Ressource ressource : allRessources) {
+                String contentType = ressource.getFileType().toLowerCase();
+                String content;
+
+                // Vérifier le type de fichier
+                if ("pdf".equals(contentType)) {
+                    // Extraction du contenu d'un fichier PDF
+                    content = pdfExtractorService.extractTextFromPDF(new FileInputStream(new File("C:/xampp/htdocs/Files/" + ressource.getUrlFile())));
+
+                    // Recherche du mot-clé dans le contenu extrait
+                    if (content != null && content.contains(keyword)) {
+                        matchingRessources.add(ressource);
+                    }
+                }
+
+
+            }
+
+            return ResponseEntity.ok(matchingRessources);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur lors de la recherche dans le contenu des fichiers.");
+        }
+    }
+
+    @PutMapping("/reactToRessource/{id}")
+    @ResponseBody
+    public ResponseEntity<?> reactToRessource(@PathVariable Long id)
+    {
+        return this.ressourceService.reactToRessource(id);
+    }
+
+    @GetMapping("/findReactionByIdReactionAndIdUser/{idRess}/{idUser}")
+    @ResponseBody
+    public Reaction findReactionByIdReactionAndIdUser(@PathVariable Long idRess, @PathVariable Long idUser)
+    {
+        return reactionDao.findReactionByIdReactionAndIdUser(idRess,idUser);
+    }
+
+    @GetMapping("/hasUserReactedToResource/{idRess}/{idUser}")
+    @ResponseBody
+    public boolean hasUserReactedToResource(@PathVariable Long idRess, @PathVariable Long idUser)
+    {
+        return ressourceService.hasUserReactedToResource(idRess,idUser);
+    }
+
+
+    @GetMapping("/getRessourcesOrderedByNbrReact")
+    @ResponseBody
+    public List<Ressource> getRessourcesOrderedByNbrReactDesc()
+    {
+        return ressourceService.getRessourcesOrderedByNbrReactDesc();
+    }
+
 
 
 }

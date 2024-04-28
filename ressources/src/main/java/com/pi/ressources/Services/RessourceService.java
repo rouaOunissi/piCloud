@@ -2,6 +2,7 @@ package com.pi.ressources.Services;
 
 import com.pi.ressources.Enum.TypeRessource;
 import com.pi.ressources.entities.Ressource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,11 +30,24 @@ public interface RessourceService {
 
     List<Ressource> getRessourcesByType(TypeRessource typeResoource);
 
-    Ressource updateRessource(Long idRessource, Ressource ressource);
 
+    Optional<Ressource> updateRessource(Long idRessource, Ressource ressource, MultipartFile file);
 
-
-    String deteleRessource(Long id);
+    ResponseEntity<?> deteleRessource(Long id);
 
     String GenerateInvoicePDF(Long id);
+
+    List<Ressource> findByTitreContaining(String titre);
+
+
+    boolean hasUserReactedToResource(long resourceId, long userId);
+
+    ResponseEntity<?> reactToRessource(Long idRess);
+
+    List<Ressource> getRessourcesOrderedByNbrReactDesc();
+
+
+    List<Ressource> searchRessourcesBySynonyms(String word);
+
+    List<Ressource> searchRessourcesByKeyword(String keyword);
 }
