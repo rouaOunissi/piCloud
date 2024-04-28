@@ -22,9 +22,14 @@ public class Reservation implements Serializable {
 
     private Integer nbPlace ;
 
+
+    private Integer idUser ;
+
+
     @JsonIgnore
     @ManyToOne
     private Event event ;
+
 
 
 
