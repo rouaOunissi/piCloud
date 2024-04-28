@@ -1,21 +1,26 @@
 package com.pi.ressources.ServicesImpl;
 
+import com.pi.ressources.Dao.ReactionDao;
 import com.pi.ressources.Dao.RessourceDao;
 import com.pi.ressources.Enum.TypeRessource;
 import com.pi.ressources.Services.FileUploadService;
 import com.pi.ressources.Services.RessourceService;
+import com.pi.ressources.Services.SynonymService;
+import com.pi.ressources.entities.Reaction;
 import com.pi.ressources.entities.Ressource;
 import jakarta.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Date;
-import java.util.Arrays;
+import java.util.*;
 
 import java.util.stream.Collectors;
 import static com.google.common.io.Files.getFileExtension;
+
 
 @Service
 public  class RessourceServiceImpl implements RessourceService {
@@ -23,6 +28,11 @@ public  class RessourceServiceImpl implements RessourceService {
      @Resource
      private RessourceDao ressourceDao;
 
+     @Autowired
+     private SynonymService synonymService;
+
+    @Resource
+    private ReactionDao reactionDao;
 
 
 
@@ -115,34 +125,56 @@ public  class RessourceServiceImpl implements RessourceService {
     }
 
 
-   @Override
-    public Ressource updateRessource(Long idRessource, Ressource ressource)
-    {
-        final Optional<Ressource > optionalRessource = ressourceDao.findById(idRessource);
-        if (optionalRessource.isPresent())
-        {
-            Ressource existingRessource = optionalRessource.get();
 
-            existingRessource.setTitre(ressource.getTitre());
-            existingRessource.setDescription(ressource.getDescription());
-            existingRessource.setTypeR(ressource.getTypeR());
-            existingRessource.setUrlFile(ressource.getUrlFile());
 
-            return  ressourceDao.save(existingRessource);
+    @Override
+    public Optional<Ressource> updateRessource(Long idRessource, Ressource ressource, MultipartFile file) {
+        final Optional<Ressource> optionalRessource = ressourceDao.findById(idRessource);
+        try {
+            if (file != null && !file.isEmpty()) {
+                String UrlFile = fileUploadService.uploadFile(file);
+                if (UrlFile != null) {
+                    String fileName = file.getOriginalFilename();
+                    String fileType = getFileExtension(fileName);
+
+                    Ressource existingRessource = optionalRessource.orElseThrow(() -> new IllegalArgumentException("Resouce not found"));
+
+                    existingRessource.setTitre(ressource.getTitre());
+                    existingRessource.setDescription(ressource.getDescription());
+                    existingRessource.setFileName(fileName);
+                    existingRessource.setFileType(fileType);
+                    existingRessource.setTypeR(ressource.getTypeR());
+                    existingRessource.setUrlFile(UrlFile);
+
+                    return Optional.of(this.ressourceDao.save(existingRessource));
+                }
+            } else {
+
+                Ressource existingRessource = optionalRessource.orElseThrow(() -> new IllegalArgumentException("Resouce not found"));
+
+                existingRessource.setTitre(ressource.getTitre());
+                existingRessource.setDescription(ressource.getDescription());
+                existingRessource.setTypeR(ressource.getTypeR());
+                return Optional.of(this.ressourceDao.save(existingRessource));
+            }
+            return Optional.empty();
+        } catch (Exception ee) {
+            ee.printStackTrace();
+            return Optional.empty();
         }
-        else {return null;}
     }
-
 
 
    @Override
-    public String deteleRessource(Long id)
-    {
-        ressourceDao.deleteById(id);
-        return "ressource removed !!";
+    public ResponseEntity<?> deteleRessource(Long id)
+    {Optional <Ressource> ressource = ressourceDao.findById(id);
+        if(ressource.isPresent()){
+            ressourceDao.deleteById(id);
+            return ResponseEntity.ok(HttpStatus.ACCEPTED);
+        }
+        else
+            return ResponseEntity.badRequest().body("Ressource do not exist");
     }
-
-
 
 
     @Override
@@ -165,7 +197,95 @@ public  class RessourceServiceImpl implements RessourceService {
         }
     }
 
+    @Override
+    public List<Ressource> findByTitreContaining(String titre) {
+        return ressourceDao.findByTitreContainingIgnoreCase(titre);
+    }
 
 
+    @Override
+    public boolean hasUserReactedToResource(long resourceId ,long userId) {
+        // Vérifie si l'utilisateur a réagi à la ressource spécifiée dans la base de données
+        Optional<Reaction> userReaction = reactionDao.findReactionByIdReactionAndIdUser2(resourceId,userId);
+        return userReaction.isPresent();
+    }
+
+    @Override
+    public ResponseEntity<?> reactToRessource(Long idRess) {
+        // Récupérer l'ID de l'utilisateur à partir de l'objet Principal
+        // Long userId = getUserIdFromPrincipal(principal);
+        Long userId = 1L;
+        Optional<Ressource> optionalRessource = ressourceDao.findById(idRess);
+
+        if (!optionalRessource.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Ressource ressource = optionalRessource.get();
+        // Vérifier si l'utilisateur a déjà réagi à cette ressource
+        Reaction existingReaction = reactionDao.findReactionByIdReactionAndIdUser(idRess,userId);
+
+        if (existingReaction != null) {
+            // Si l'utilisateur a déjà réagi, supprimer sa réaction
+            reactionDao.delete(existingReaction);
+
+            // Décrémenter le nombre de réactions uniquement si la réaction existait déjà
+            Long nbrReact = ressource.getNbrReact();
+            nbrReact--;
+            ressource.setNbrReact(nbrReact);
+        } else {
+            // Si l'utilisateur n'a pas réagi, enregistrer sa réaction
+            Reaction reaction = new Reaction();
+            reaction.setIdUser(userId);
+            reaction.setRessource(ressource);
+            reactionDao.save(reaction);
+
+            // Incrémenter le nombre de réactions uniquement si c'est une nouvelle réaction
+            Long nbrReact = ressource.getNbrReact();
+            nbrReact++;
+            ressource.setNbrReact(nbrReact);
+        }
+
+        ressourceDao.save(ressource);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public List<Ressource> getRessourcesOrderedByNbrReactDesc() {
+        return ressourceDao.findAllOrderByNbrReactDesc();
+    }
+
+
+    @Override
+    public List<Ressource> searchRessourcesBySynonyms(String word) {
+        String[] synonyms = synonymService.getSynonyms(word);
+        System.out.println("Synonyms: " + Arrays.toString(synonyms));
+        List<Ressource> results = new ArrayList<>();
+        for (String synonym : synonyms) {
+            // Rechercher les ressources par titre ou description contenant le synonyme
+            List<Ressource> synonymResults = ressourceDao.findByTitleContainingOrDescriptionContaining(synonym);
+            results.addAll(synonymResults);
+        }
+        return results;
+    }
+
+
+    @Override
+    public List<Ressource> searchRessourcesByKeyword(String word) {
+        String[] synonymsArray = synonymService.getSynonyms(word);
+        if (synonymsArray == null || synonymsArray.length == 0) {
+            return Collections.emptyList();
+        }
+
+        List<String> synonyms = Arrays.asList(synonymsArray);
+
+        Set<Ressource> results = new HashSet<>();
+        for (String synonym : synonyms) {
+            List<Ressource> matchingRessources = ressourceDao.findByTitleContainingOrDescriptionContaining(synonym);
+            results.addAll(matchingRessources);
+        }
+        return new ArrayList<>(results);
+    }
 
 }

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,6 +19,7 @@ import java.util.List;
 @Setter
 @Entity
 @Data
+
 @NoArgsConstructor
 
 public class Ressource implements Serializable {
@@ -26,12 +28,18 @@ public class Ressource implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRessource;
 
+
     private String titre;
+
     private String description;
     private Long nbrReact;
     private String urlFile;
+
+
     private String fileName;
+
     private String fileType;
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreation;
 
@@ -43,5 +51,9 @@ public class Ressource implements Serializable {
     @OneToMany(mappedBy = "ressource", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Download> downloads = new ArrayList<>();
+
+    @OneToMany(mappedBy = "ressource", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Reaction> reactions = new ArrayList<>();
 
 }
