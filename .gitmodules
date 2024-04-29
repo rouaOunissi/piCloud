@@ -1,0 +1,3 @@
+[submodule "piCloud"]
+	path = piCloud
+	url = https://github.com/rouaOunissi/piCloud.git
