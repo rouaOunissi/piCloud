@@ -13,7 +13,6 @@ public interface IComment {
     List<CommentResponse> getCommentByUser(long id_user);
 
     void updateComment (int id_comment , CommentRequest commentRequest);
-    void deleteComment(int id_comment);
 
 
 

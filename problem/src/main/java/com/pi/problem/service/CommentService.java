@@ -5,8 +5,13 @@ import com.pi.problem.dto.CommentResponse;
 import com.pi.problem.interfaces.IComment;
 import com.pi.problem.model.Comment;
 import com.pi.problem.model.Issue;
+import com.pi.problem.model.React;
 import com.pi.problem.repository.CommentDao;
+import com.pi.problem.repository.ReactDao;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +27,7 @@ public class CommentService implements IComment {
     @Resource
     private final CommentDao commentDao;
     private final IssueService service;
+    private final ReactDao reactDao;
 
     @Override
     public void addCommentToIssue(int id, CommentRequest commentRequest) throws ParseException {
@@ -33,7 +39,7 @@ public class CommentService implements IComment {
         Issue issue = service.getTargetIssue(id);
 
         Comment newComment = Comment.builder()
-                .id_user(1)
+                .id_user(commentRequest.getId_user())
                 .comment_details(commentRequest.getComment_details())
                 .nbr_reaction(0)
                 .creation_date(parsedDate)
@@ -44,6 +50,9 @@ public class CommentService implements IComment {
 
 
     }
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Override
     public CommentResponse getCommentById(int id_comment) {
         Comment comment = commentDao.findById(id_comment).get();
@@ -74,7 +83,6 @@ public class CommentService implements IComment {
         comment.setComment_details(commentRequest.getComment_details());
         commentDao.save(comment);
     }
-    @Override
     public void deleteComment(int id_comment) {
         Comment comment = commentDao.findById(id_comment).orElse(null);
         if (comment != null) {
@@ -102,6 +110,12 @@ public class CommentService implements IComment {
 
     }
 
+    public List<CommentResponse> getAllComment(){
+        List<Comment> comments = commentDao.findAll();
+        return comments.stream().map(this::mapTOCommentResponse).toList();
+
+    }
+
     private CommentResponse mapTOCommentResponse(Comment comment) {
         return CommentResponse.builder()
                 .id_user(comment.getId_user())
@@ -112,4 +126,7 @@ public class CommentService implements IComment {
                 .build();
     }
 
+    public Integer getNumberReactByComment(int idComment) {
+        return commentDao.getReactionCountForComment(idComment);
+    }
 }

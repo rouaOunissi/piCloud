@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 public interface IIssue {
-    void addIssueWithImg(String title, String description, MultipartFile image,Priority priority) throws ParseException, IOException;
+    void addIssueWithImg(String title, String description, MultipartFile image,Priority priority,long id_user) throws ParseException, IOException;
     IssueResponse getIssueByID(int id);
     Issue getTargetIssue(int id);
     List<IssueResponse> getIssueByUser(long id_user);
@@ -21,9 +21,8 @@ public interface IIssue {
 
     List<IssueResponse> getIssueByStatus(Status status );
 
-    void updateIssue(int id,IssueResponse issueResponse);
+    void updateIssue(Issue issue);
     List<IssueResponse> getAllIssue();
-    void deleteIssue(int id_issue);
 
 
 }
