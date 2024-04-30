@@ -1,5 +1,6 @@
 package com.pi.problem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,12 +15,14 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class React implements Serializable {
-    @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id_react;
-    int id_user;
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    long id_user;
+    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_comment")
-     Comment comment;
+    Comment comment;
 }
+
+

@@ -29,7 +29,7 @@
       <module name="gateway" options="-parameters" />
       <module name="problem" options="-parameters" />
       <module name="projet" options="-parameters" />
-      <module name="purchase" options="-parameters" />
+      <module name="purchase" options="" />
       <module name="ressources" options="-parameters" />
       <module name="users" options="-parameters" />
     </option>

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class IssueRequest  {
     private String issueTitle;
     private String issueDescription;
-   @Lob
+    @Lob
     private byte[] uriImage;
     @Enumerated(EnumType.STRING)
     private Priority priority;

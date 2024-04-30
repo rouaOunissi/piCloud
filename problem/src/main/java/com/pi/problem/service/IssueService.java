@@ -5,10 +5,15 @@ import com.pi.problem.dto.IssueResponse;
 import com.pi.problem.enums.Priority;
 import com.pi.problem.enums.Status;
 import com.pi.problem.interfaces.IIssue;
+import com.pi.problem.model.Comment;
 import com.pi.problem.model.Issue;
+import com.pi.problem.repository.CommentDao;
 import com.pi.problem.repository.IssueDao;
 import com.pi.problem.utils.ImageUtils;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,10 +30,29 @@ public class IssueService implements IIssue {
 
     @Resource
     private final IssueDao issueDao;
+    private final CommentDao commentDao;
+    @PersistenceContext
+    private EntityManager entityManager;
+    @Transactional
+    public void deleteIssue(int issueId) {
+        Issue issue = issueDao.findById(issueId).orElse(null);
+        if (issue != null) {
+            // Delete associated comments first
+            List<Comment> comments = commentDao.getCommentByIssue(issueId);
+            for (Comment comment : comments) {
+                entityManager.remove(comment);
+            }
+            entityManager.flush();
+            entityManager.clear();
+
+            // Then delete the issue
+            issueDao.delete(issue);
+        }
+    }
 
 
     @Override
-    public void addIssueWithImg(String title, String description, MultipartFile image, Priority priority) throws ParseException, IOException {
+    public void addIssueWithImg(String title, String description, MultipartFile image, Priority priority,long id_user) throws ParseException, IOException {
         Date currentDateTime = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         String formattedDate = dateFormat.format(currentDateTime);
@@ -38,10 +62,10 @@ public class IssueService implements IIssue {
                 .issueTitle(title)
                 .issueDescription(description)
                 .priority(priority)
-                .uriImage(ImageUtils.compressImage(image.getBytes()))
+                .uriImage((image.getBytes()))
                 .creationDate(parsedDate)
                 .status(Status.OPEN)
-                .id_user(1)
+                .id_user(id_user)
                 .build();
         issueDao.save(issue);
 
@@ -50,14 +74,13 @@ public class IssueService implements IIssue {
     @Override
     public IssueResponse getIssueByID(int id) {
         Issue issue = issueDao.findById(id).get();
-        byte[] decompressedImage = ImageUtils.decompressImage(issue.getUriImage());
         IssueResponse issueResponse = IssueResponse
                 .builder()
                 .id_issue(issue.getId_issue())
                 .id_user(issue.getId_user())
                 .issueTitle(issue.getIssueTitle())
                 .issueDescription(issue.getIssueDescription())
-                .uriImage(decompressedImage)
+                .uriImage(issue.getUriImage())
                 .creationDate(issue.getCreationDate())
                 .priority(issue.getPriority())
                 .status(issue.getStatus())
@@ -79,7 +102,7 @@ public class IssueService implements IIssue {
 
     @Override
     public List<IssueResponse> getIssueByPriority(Priority priority) {
-        List<Issue> issues = issueDao.findIssueByPtiority(priority);
+        List<Issue> issues = issueDao.findIssueByPriority(priority);
         return issues.stream().map(this::mapToIssueResponse).toList();
     }
 
@@ -90,12 +113,7 @@ public class IssueService implements IIssue {
     }
 
     @Override
-    public void updateIssue(int id, IssueResponse issueResponse) {
-        Issue issue = issueDao.findById(id).get();
-        issue.setIssueTitle(issueResponse.getIssueTitle());
-        issue.setIssueDescription(issueResponse.getIssueDescription());
-        issue.setPriority(issueResponse.getPriority());
-        issue.setStatus(issueResponse.getStatus());
+    public void updateIssue( Issue issue) {
         issueDao.save(issue);
 
 
@@ -108,12 +126,6 @@ public class IssueService implements IIssue {
         return issues.stream().map(this::mapToIssueResponse).toList();
     }
 
-
-    @Override
-    public void deleteIssue(int id_issue) {
-        Issue issue = issueDao.findById(id_issue).get();
-        issueDao.delete(issue);
-    }
 
     private IssueResponse mapToIssueResponse(Issue issue) {
         return IssueResponse.builder()

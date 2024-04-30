@@ -13,4 +13,9 @@ public interface CommentDao extends JpaRepository<Comment,Integer> {
 
     @Query("SELECT c FROM Comment c WHERE c.id_user = :idUser ORDER BY c.creation_date DESC")
     List<Comment> getCommentByUser(long idUser);
+
+    @Query("SELECT c.nbr_reaction FROM Comment c WHERE c.id_comment = :commentId")
+    Integer getReactionCountForComment(int commentId);
+
+
 }

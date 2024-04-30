@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IssueDao extends JpaRepository<Issue,Integer> {
     @Query("SELECT i FROM Issue i WHERE i.priority = :priority ORDER BY i.creationDate DESC")
-    public abstract List<Issue> findIssueByPtiority(Priority priority);
+    public abstract List<Issue> findIssueByPriority(Priority priority);
 
     @Query("SELECT i FROM Issue i WHERE i.id_user = :idUser ORDER BY i.creationDate DESC")
     public abstract List<Issue> findIssueByUser(long idUser);
