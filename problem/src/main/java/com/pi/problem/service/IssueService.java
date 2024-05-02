@@ -140,4 +140,9 @@ public class IssueService implements IIssue {
                 .build();
     }
 
+    public void updateIssueStatus(int idIssue, Status status) {
+        Issue issue = issueDao.findById(idIssue).get();
+        issue.setStatus(status);
+        issueDao.save(issue);
+    }
 }

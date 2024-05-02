@@ -88,7 +88,10 @@ public class IssueController {
     public void deleteIssue(@PathVariable int id_issue ){
         this.issueService.deleteIssue(id_issue);
     }
-
+    @PutMapping("update-status/{id_issue}")
+    public void updateStatusIssue(@PathVariable int id_issue,@RequestParam("status") Status status){
+        issueService.updateIssueStatus(id_issue,status);
+    }
 
 
 

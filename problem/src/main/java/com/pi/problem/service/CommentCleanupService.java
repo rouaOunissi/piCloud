@@ -1,11 +1,14 @@
 package com.pi.problem.service;
 
 
+import com.pi.problem.feign.UserClient;
 import com.pi.problem.model.Comment;
 import com.pi.problem.repository.CommentDao;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -20,6 +23,9 @@ public class CommentCleanupService {
     private CommentService commentService;
     @Autowired
     private SendMailService sendMailService;
+    @Autowired
+    private UserClient userClient;
+
     @Scheduled(fixedRate = 30000)
     public void cleanupComments() {
         List<Comment> comments = commentDao.findAll();
@@ -35,11 +41,10 @@ public class CommentCleanupService {
         return text.contains("****");
     }
     public void sendEmail(long id_user){
-
+        ResponseEntity<String> responseEntity = userClient.findEmailById(id_user);
+        String email = responseEntity.getBody();
         String username ="Roua Ounissi";
-
-        String to,body,title;
-        to="ounissiroua1@gmail.com";
+        String body,title;
         title="Temporary Account Suspension Notice";
 
         body="Dear "+ username+ ",  We hope this message finds you well. We regret to inform you that your account has been temporarily suspended for a period of one day due to a violation of our community guidelines.\n" +
@@ -49,12 +54,13 @@ public class CommentCleanupService {
                 "Your account will be reinstated after the suspension period has elapsed. We kindly ask that you review our community guidelines to avoid similar incidents in the future.\n" +
                 "\n" +
                 "If you have any questions or concerns regarding this suspension, please feel free to reach out to our support team at ";
-        sendMailService.sendEmailMessage(to,title,body);
+        sendMailService.sendEmailMessage(email,title,body);
 
-        this.banUser(id_user);
+        this.banUser(email);
     }
-    void banUser(long id_user){
-        System.out.println("right now we gonna Ban ours User ");
+    void banUser( String email){
+
+        System.out.println("right now we gonna Ban ours User , "+email);
         /*
         * In this code we gonne to Ban our user
         * User user = findUserByID(id_user)
