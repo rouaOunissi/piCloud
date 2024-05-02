@@ -42,7 +42,8 @@ public interface RessourceService {
 
     boolean hasUserReactedToResource(long resourceId, long userId);
 
-    ResponseEntity<?> reactToRessource(Long idRess);
+
+    ResponseEntity<?> reactToRessource(Long idRess, Long userId);
 
     List<Ressource> getRessourcesOrderedByNbrReactDesc();
 

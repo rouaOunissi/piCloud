@@ -310,11 +310,10 @@ public class RessourceController {
         }
     }
 
-    @PutMapping("/reactToRessource/{id}")
+    @PutMapping("/reactToRessource/{idRess}/{userId}")
     @ResponseBody
-    public ResponseEntity<?> reactToRessource(@PathVariable Long id)
-    {
-        return this.ressourceService.reactToRessource(id);
+    public ResponseEntity<?> reactToRessource(@PathVariable Long idRess, @PathVariable Long userId) {
+        return this.ressourceService.reactToRessource(idRess, userId);
     }
 
     @GetMapping("/findReactionByIdReactionAndIdUser/{idRess}/{idUser}")

@@ -39,7 +39,7 @@ public  class RessourceServiceImpl implements RessourceService {
         @Override
            public Ressource addRessource(Ressource ressource) {
                ressource.setDateCreation(new Date());
-               ressource.setIdUser(Long.valueOf(1));
+              // ressource.setIdUser(Long.valueOf(1));
                ressource.setNbrReact(Long.valueOf(0));
                return this.ressourceDao.save(ressource);
           }
@@ -59,11 +59,13 @@ public  class RessourceServiceImpl implements RessourceService {
                     ressource.setFileType(fileType);
 
                     ressource.setDateCreation(new Date());
-                    ressource.setIdUser(Long.valueOf(1));
+                    System.out.println("idUser before saving: " + ressource.getIdUser());
                     ressource.setNbrReact(Long.valueOf(0));
                     ressource.setUrlFile(UrlFile);
-                    return Optional.of(this.ressourceDao.save(ressource));
-
+                    // Save the ressource object
+                    Ressource savedRessource = this.ressourceDao.save(ressource);
+                    System.out.println("idUser after saving: " + savedRessource.getIdUser());
+                    return Optional.of(savedRessource);
                 }
                 return Optional.empty();
             }catch (Exception ee)
@@ -211,10 +213,7 @@ public  class RessourceServiceImpl implements RessourceService {
     }
 
     @Override
-    public ResponseEntity<?> reactToRessource(Long idRess) {
-        // Récupérer l'ID de l'utilisateur à partir de l'objet Principal
-        // Long userId = getUserIdFromPrincipal(principal);
-        Long userId = 1L;
+    public ResponseEntity<?> reactToRessource(Long idRess, Long userId) {
         Optional<Ressource> optionalRessource = ressourceDao.findById(idRess);
 
         if (!optionalRessource.isPresent()) {
@@ -223,7 +222,7 @@ public  class RessourceServiceImpl implements RessourceService {
 
         Ressource ressource = optionalRessource.get();
         // Vérifier si l'utilisateur a déjà réagi à cette ressource
-        Reaction existingReaction = reactionDao.findReactionByIdReactionAndIdUser(idRess,userId);
+        Reaction existingReaction = reactionDao.findReactionByIdReactionAndIdUser(idRess, userId);
 
         if (existingReaction != null) {
             // Si l'utilisateur a déjà réagi, supprimer sa réaction
@@ -250,6 +249,7 @@ public  class RessourceServiceImpl implements RessourceService {
 
         return ResponseEntity.ok().build();
     }
+
 
     @Override
     public List<Ressource> getRessourcesOrderedByNbrReactDesc() {
