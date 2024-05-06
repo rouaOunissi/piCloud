@@ -4,7 +4,6 @@ package com.pi.problem.service;
 import com.pi.problem.feign.UserClient;
 import com.pi.problem.model.Comment;
 import com.pi.problem.repository.CommentDao;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +42,7 @@ public class CommentCleanupService {
     public void sendEmail(long id_user){
         ResponseEntity<String> responseEntity = userClient.findEmailById(id_user);
         String email = responseEntity.getBody();
+
         String username ="Roua Ounissi";
         String body,title;
         title="Temporary Account Suspension Notice";
@@ -56,17 +56,10 @@ public class CommentCleanupService {
                 "If you have any questions or concerns regarding this suspension, please feel free to reach out to our support team at ";
         sendMailService.sendEmailMessage(email,title,body);
 
-        this.banUser(email);
+        this.banUser(id_user);
     }
-    void banUser( String email){
-
-        System.out.println("right now we gonna Ban ours User , "+email);
-        /*
-        * In this code we gonne to Ban our user
-        * User user = findUserByID(id_user)
-        * user.setStatus(disable)
-        * updateuser(user)*/
-
+    void banUser( long id_user){
+        userClient.setUserStatus(id_user);
     }
 
 }

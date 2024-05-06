@@ -27,6 +27,5 @@ public interface ReservationService {
     public boolean addReservationToEvent(Reservation reservation, Integer idEvent);
 
 
-
-
+    List<Reservation> getReservationByEvent(int idEvent);
 }

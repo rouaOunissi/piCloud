@@ -91,4 +91,10 @@ public class ReservationServiceImp implements ReservationService{
         }
         return Boolean.FALSE;
     }
+
+    @Override
+    public List<Reservation> getReservationByEvent(int idEvent) {
+        Event event = eventRepository.findById(idEvent).get();
+        return reservationRepository.getReservationsByEvent(event);
+    }
 }

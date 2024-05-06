@@ -17,15 +17,9 @@ public class Reservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idReservation ;
-
     private String description ;
-
     private Integer nbPlace ;
-
-
     private Integer idUser ;
-
-
     @JsonIgnore
     @ManyToOne
     private Event event ;

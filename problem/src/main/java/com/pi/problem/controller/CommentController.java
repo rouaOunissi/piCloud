@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
 import java.util.List;
@@ -64,6 +65,8 @@ public class CommentController {
     public void deleteComment(@PathVariable int id_comment ){
         this.service.deleteComment(id_comment);
     }
+
+
 
 
 }

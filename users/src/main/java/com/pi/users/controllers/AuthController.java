@@ -183,6 +183,24 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PutMapping("updateStatus/{id_user}")
+    public void setUserStatus(@PathVariable("id_user") long id_user ){
+        //Optional<User> userOptional = userRepo.findByConfirmationToken(token);
+
+        //User user = userOptional.get();
+        User u = userService.getUserById(id_user);
+
+        if (u.isEnabled()) {
+
+            u.setEnabled(false);
+            u.setConfirmationToken(null);
+            userRepo.save(u);
+
+        }
+
+      //  userService.setUserStatus(id_user);
+    }
+
 
 
 

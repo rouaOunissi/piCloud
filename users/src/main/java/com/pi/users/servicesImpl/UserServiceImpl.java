@@ -195,6 +195,13 @@ public class UserServiceImpl implements UserServices {
         return userRepository.findBySpeciality(speciality);
     }
 
+    @Override
+    public void setUserStatus(long idUser) {
+        User user = userRepository.findById(idUser).get();
+        user.setEnabled(false);
+        userRepository.save(user);
+    }
+
 
 }
 

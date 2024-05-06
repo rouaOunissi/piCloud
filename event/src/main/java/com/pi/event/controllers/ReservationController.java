@@ -66,6 +66,10 @@ public class ReservationController {
         return new ResponseEntity<>(this.reservationService.updateReservation(reservation),HttpStatus.OK);
     }
 
+    @GetMapping("/event/reservation/{id_event}")
+    public List<Reservation> getReservationByEvent(@PathVariable int id_event){
+        return reservationService.getReservationByEvent(id_event);
+    }
 
 
     @PostMapping("/reservations/addReservationToEvent")
