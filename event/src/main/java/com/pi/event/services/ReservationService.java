@@ -1,5 +1,6 @@
 package com.pi.event.services;
 
+import com.pi.event.dto.ReservationDto;
 import com.pi.event.entities.Event;
 import com.pi.event.entities.Reservation;
 
@@ -24,5 +25,8 @@ public interface ReservationService {
 
 
     public boolean addReservationToEvent(Reservation reservation, Integer idEvent);
+
+
+
 
 }

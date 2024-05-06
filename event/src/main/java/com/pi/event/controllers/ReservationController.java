@@ -16,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class ReservationController {
 
     private final ReservationService reservationService ;
@@ -69,6 +70,7 @@ public class ReservationController {
 
     @PostMapping("/reservations/addReservationToEvent")
     public ResponseEntity<?> addReservationToEvent(@RequestBody  ReservationDto reservationDto) {
+
         if (reservationDto == null)
             return new ResponseEntity<>("provided input is null", HttpStatus.BAD_REQUEST);
        boolean succes = this.reservationService.addReservationToEvent(reservationDto.getReservation(), reservationDto.getIdEvent());

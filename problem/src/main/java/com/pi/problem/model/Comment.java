@@ -22,7 +22,7 @@ public class Comment implements Serializable {
     private String comment_details;
     private Date creation_date;
     private int nbr_reaction;
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_issue")
     private Issue issue;
 

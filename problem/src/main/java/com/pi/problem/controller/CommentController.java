@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comment")
+@CrossOrigin("*")
 public class CommentController {
 
     @Autowired
@@ -30,15 +31,26 @@ public class CommentController {
     public CommentResponse getCommentByID(@PathVariable int id_comment){
         return service.getCommentById(id_comment);
     }
-    @GetMapping("/issue")
+    @GetMapping("/issue/{id_issue}")
     @ResponseStatus(HttpStatus.OK)
-    public List<CommentResponse> getCommentByIssue(@RequestParam int id_issue){
+    public List<CommentResponse> getCommentByIssue(@PathVariable int id_issue){
         return service.getCommentByIssue(id_issue);
+    }
+    @GetMapping("/comment-id/{id_comment}")
+    @ResponseStatus(HttpStatus.OK)
+    public Integer getNumberReactByComment(@PathVariable int id_comment){
+        return service.getNumberReactByComment(id_comment);
     }
     @GetMapping("/user")
     @ResponseStatus(HttpStatus.OK)
     public List<CommentResponse> getCommentByUser(@RequestParam long id_user) {
         return service.getCommentByUser(id_user);
+
+    }
+    @GetMapping("/allcomment")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CommentResponse> getallComments() {
+        return service.getAllComment();
 
     }
     @PutMapping("/update/{id_comment}")
