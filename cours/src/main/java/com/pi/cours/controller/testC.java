@@ -1,4 +1,4 @@
-package com.pi.cours.controller;
+/*package com.pi.cours.controller;
 
 import com.pi.cours.dao.CourseDao;
 import com.pi.cours.models.Course;
@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@Slf4j
+/*@Slf4j
 @RestController
 @RequestMapping("/api/")
 
 @CrossOrigin(origins = "http://localhost:4200", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*")
 
-public class testC {
+/*public class testC {
     @Autowired
     private CourseDao courseDao;
     @GetMapping("/courses/{courseId}/video")
@@ -39,4 +39,4 @@ public class testC {
         }
     }
 
-}
+}*/

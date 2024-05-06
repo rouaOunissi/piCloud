@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CourseService {
-    List<Course> findAll();
-    List<Course> getAllCours();
-    Course getCoursById(Long id);
-    Course createCours(Course cours);
-    Course updateCours(Long id, Course cours);
-    void deleteCours(Long id);
 
 
-    void addCoursWithFile(String title, String description, MultipartFile video, BigDecimal price) throws ParseException, IOException;
+    Course addCourse(Course course, MultipartFile[] files);
+
+    Course updateCourse(Course course);
+    void deleteCourse(Long id);
+    Course getCourseById(Long id);
+    List<Course> getAllCourses();
+
+    Optional<Course> findCourseByTitle(String title);
 }

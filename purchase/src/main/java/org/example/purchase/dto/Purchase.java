@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -22,8 +23,14 @@ public class Purchase {
 
      private Long idCourse;
 
+     private Integer sellerId ;
+
+     private String paymentId;
+
     @CreationTimestamp
     private Date dateEnrolled;
+
+    private BigDecimal price ;
 }
 
 
