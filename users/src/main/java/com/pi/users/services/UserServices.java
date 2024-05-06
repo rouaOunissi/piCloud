@@ -48,4 +48,5 @@ public interface UserServices {
     public List<User> getUsersBySpeciality(Speciality speciality);
 
 
+    void setUserStatus(long idUser);
 }

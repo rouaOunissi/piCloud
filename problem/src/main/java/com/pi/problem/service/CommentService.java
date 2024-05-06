@@ -129,4 +129,6 @@ public class CommentService implements IComment {
     public Integer getNumberReactByComment(int idComment) {
         return commentDao.getReactionCountForComment(idComment);
     }
+
+
 }
