@@ -60,7 +60,6 @@ public class DownloadServiceImpl implements DownloadService {
   @Override
     public Download addDownload(Download download) {
       download.setDateDownload(new Date());
-      download.setIdUser(Long.valueOf(1));
 
       Ressource ressource = download.getRessource();
               Optional<Ressource> ressourceOptional = ressourceDao.findById(ressource.getIdRessource());

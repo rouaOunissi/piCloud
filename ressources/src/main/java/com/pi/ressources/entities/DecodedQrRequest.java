@@ -8,7 +8,7 @@ import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
-
+@Entity
 public class DecodedQrRequest {
     @Id
     private Long idDecodedQrRequest;

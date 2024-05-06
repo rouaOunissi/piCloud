@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,21 +84,27 @@ public class RessourceController {
     }
 
 
+
+    @GetMapping("/getTotalReactionsForRessource/{ressourceId}")
+    @ResponseBody
+    public int getTotalReactionsForRessource(@PathVariable Long ressourceId)
+    {
+        return this.ressourceService.getTotalReactionsForRessource(ressourceId);
+    }
+
+
+
     @GetMapping("/search")
     public List<Ressource> searchRessourcesByTitre(@RequestParam String titre) {
         return ressourceService.findByTitreContaining(titre);
     }
 
     @GetMapping("/synonyms")
-    public List<Ressource> searchRessourcesBySynonyms(@RequestParam String word) {
+    public Set<Ressource> searchRessourcesBySynonyms(@RequestParam String word) {
         return ressourceService.searchRessourcesBySynonyms(word);
     }
 
 
-    @GetMapping("/synonymsSearch")
-    public List<Ressource> searchRessourcesByKeyword(@RequestParam String word) {
-        return ressourceService.searchRessourcesByKeyword(word);
-    }
     @GetMapping("/ressourceByType")
     @ResponseBody
     public List<Ressource> getRessourcesByType(@RequestParam TypeRessource typeRessource)
@@ -281,7 +288,7 @@ public class RessourceController {
         try {
             List<Ressource> matchingRessources = new ArrayList<>();
 
-            // Récupérer toutes les ressources (par exemple)
+
             List<Ressource> allRessources = ressourceService.findAll();
 
             // Parcourir chaque ressource pour extraire et rechercher le contenu

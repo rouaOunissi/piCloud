@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-
+@Entity
 public class DecodedQrResponse {
     private String qrString;
 

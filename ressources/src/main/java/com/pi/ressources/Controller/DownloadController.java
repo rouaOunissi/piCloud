@@ -74,9 +74,9 @@ public class DownloadController {
     @Autowired
     private RessourceService ressourceService;
 
-    @GetMapping("/download/{urlFile}/{fileName}")
+    @GetMapping("/download/{urlFile}/{fileName}/{idUser}")
     @ResponseBody
-    public ResponseEntity<byte[]> downloadFile(@PathVariable String urlFile, @PathVariable String fileName) {
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String urlFile, @PathVariable String fileName, @PathVariable Long idUser) {
         try {
 
             byte[] fileContent = downloadService.downloadFileContent(urlFile);
@@ -94,7 +94,7 @@ public class DownloadController {
 
                 Download download = new Download();
                 download.setRessource(ressource);
-                download.setIdUser(Long.valueOf(1));
+                download.setIdUser(idUser);
                 download.setDateDownload(new Date());
                 downloadService.addDownload(download);
             }

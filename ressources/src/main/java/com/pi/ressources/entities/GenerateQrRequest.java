@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-
+@Entity
 public class GenerateQrRequest {
     @Id
     private Long idGenerateQrRequest;

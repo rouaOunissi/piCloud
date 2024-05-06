@@ -26,7 +26,7 @@ public class SynonymServiceImpl implements SynonymService {
         this.restTemplate = restTemplate;
     }
 
-    @Value("zGXoRIglJM7MJLwBrkttKA==l1eA5pXqSHkZheuv") // Injectez la clé API à partir des propriétés ou des variables d'environnement
+    @Value("zGXoRIglJM7MJLwBrkttKA==l1eA5pXqSHkZheuv")
     private String apiKey;
 
     @Override
@@ -38,14 +38,14 @@ public class SynonymServiceImpl implements SynonymService {
         ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.GET, entity, String.class);
 
         try {
-            // Désérialiser la réponse JSON en un objet Java
+
             SynonymResponse synonymResponse = objectMapper.readValue(response.getBody(), SynonymResponse.class);
-            // Récupérer les synonymes de l'objet Java
+
             return synonymResponse.getSynonyms();
         } catch (IOException e) {
             e.printStackTrace();
-            // Gérer les erreurs de désérialisation
-            return new String[0]; // Ou renvoyer null ou une valeur par défaut, selon la logique de votre application
+
+            return new String[0];
         }
     }
 }

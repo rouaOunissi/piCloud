@@ -27,11 +27,11 @@ public class QRCodeController {
     private QRCodeService qrCodeService;
 
     @PostMapping(path = "/api/qr/generate", produces = MediaType.IMAGE_JPEG_VALUE)
-    public void generateQr(@RequestBody Ressource urlRess, HttpServletResponse response) throws MissingServletRequestParameterException, WriterException, IOException {
-        if (urlRess == null || urlRess.getUrlFile() == null || urlRess.getUrlFile().trim().equals("")) {
-            throw new MissingServletRequestParameterException("qrString", "String");
+    public void generateQr(@RequestParam("urlFile") String urlFile, HttpServletResponse response) throws MissingServletRequestParameterException, WriterException, IOException {
+        if (urlFile == null || urlFile.trim().equals("")) {
+            throw new MissingServletRequestParameterException("urlFile", "String");
         }
-        String qrString = "http://192.168.43.124/Files/" + urlRess.getUrlFile();
+        String qrString = "http://192.168.1.5/Files/" + urlFile;
         qrCodeService.generateQr(qrString, response.getOutputStream());
         response.getOutputStream().flush();
     }

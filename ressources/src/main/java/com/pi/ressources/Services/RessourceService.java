@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface RessourceService {
 
@@ -45,10 +47,11 @@ public interface RessourceService {
 
     ResponseEntity<?> reactToRessource(Long idRess, Long userId);
 
+
+    int getTotalReactionsForRessource(Long ressourceId);
+
     List<Ressource> getRessourcesOrderedByNbrReactDesc();
 
 
-    List<Ressource> searchRessourcesBySynonyms(String word);
-
-    List<Ressource> searchRessourcesByKeyword(String keyword);
+    Set<Ressource> searchRessourcesBySynonyms(String word);
 }

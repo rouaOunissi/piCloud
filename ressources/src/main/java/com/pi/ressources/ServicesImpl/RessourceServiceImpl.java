@@ -59,12 +59,12 @@ public  class RessourceServiceImpl implements RessourceService {
                     ressource.setFileType(fileType);
 
                     ressource.setDateCreation(new Date());
-                    System.out.println("idUser before saving: " + ressource.getIdUser());
+                    //System.out.println("idUser before saving: " + ressource.getIdUser());
                     ressource.setNbrReact(Long.valueOf(0));
                     ressource.setUrlFile(UrlFile);
                     // Save the ressource object
                     Ressource savedRessource = this.ressourceDao.save(ressource);
-                    System.out.println("idUser after saving: " + savedRessource.getIdUser());
+                    //System.out.println("idUser after saving: " + savedRessource.getIdUser());
                     return Optional.of(savedRessource);
                 }
                 return Optional.empty();
@@ -250,6 +250,10 @@ public  class RessourceServiceImpl implements RessourceService {
         return ResponseEntity.ok().build();
     }
 
+    @Override
+    public int getTotalReactionsForRessource(Long ressourceId) {
+        return reactionDao.countReactionsByRessourceId(ressourceId);
+    }
 
     @Override
     public List<Ressource> getRessourcesOrderedByNbrReactDesc() {
@@ -257,35 +261,31 @@ public  class RessourceServiceImpl implements RessourceService {
     }
 
 
-    @Override
-    public List<Ressource> searchRessourcesBySynonyms(String word) {
-        String[] synonyms = synonymService.getSynonyms(word);
-        System.out.println("Synonyms: " + Arrays.toString(synonyms));
-        List<Ressource> results = new ArrayList<>();
-        for (String synonym : synonyms) {
-            // Rechercher les ressources par titre ou description contenant le synonyme
-            List<Ressource> synonymResults = ressourceDao.findByTitleContainingOrDescriptionContaining(synonym);
-            results.addAll(synonymResults);
-        }
-        return results;
+
+
+   @Override
+   public Set<Ressource> searchRessourcesBySynonyms(String word) {
+       String[] synonyms = synonymService.getSynonyms(word);
+       System.out.println("Synonyms: " + Arrays.toString(synonyms));
+       Set<Ressource> results = new HashSet<>(); // Use a Set instead of a List
+       for (String synonym : synonyms) {
+           // Rechercher les ressources par titre ou description contenant le synonyme
+           List<Ressource> synonymResults = ressourceDao.findByTitleContainingOrDescriptionContaining(synonym);
+           for (Ressource ressource : synonymResults) {
+               // Vérifier si le titre ou la description contient le synonyme exactement
+               if (containsWord(ressource.getTitre(), synonym) || containsWord(ressource.getDescription(), synonym)) {
+                   results.add(ressource);
+               }
+           }
+       }
+       return results;
+   }
+
+    // Méthode utilitaire pour vérifier si une chaîne contient un mot exact
+    private boolean containsWord(String text, String word) {
+        return text.toLowerCase().contains(word.toLowerCase());
     }
 
 
-    @Override
-    public List<Ressource> searchRessourcesByKeyword(String word) {
-        String[] synonymsArray = synonymService.getSynonyms(word);
-        if (synonymsArray == null || synonymsArray.length == 0) {
-            return Collections.emptyList();
-        }
-
-        List<String> synonyms = Arrays.asList(synonymsArray);
-
-        Set<Ressource> results = new HashSet<>();
-        for (String synonym : synonyms) {
-            List<Ressource> matchingRessources = ressourceDao.findByTitleContainingOrDescriptionContaining(synonym);
-            results.addAll(matchingRessources);
-        }
-        return new ArrayList<>(results);
-    }
 
 }
