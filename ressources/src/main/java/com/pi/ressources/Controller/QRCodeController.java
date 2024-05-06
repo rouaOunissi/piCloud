@@ -31,7 +31,7 @@ public class QRCodeController {
         if (urlFile == null || urlFile.trim().equals("")) {
             throw new MissingServletRequestParameterException("urlFile", "String");
         }
-        String qrString = "http://192.168.1.5/Files/" + urlFile;
+        String qrString = "http://192.168.1.106/Files/" + urlFile;
         qrCodeService.generateQr(qrString, response.getOutputStream());
         response.getOutputStream().flush();
     }
