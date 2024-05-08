@@ -3,10 +3,12 @@ package com.pi.cours.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pi.cours.dao.CourseDao;
 import com.pi.cours.models.Video;
-import com.pi.cours.services.FileService;
+import com.pi.cours.services.CourseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import com.pi.cours.models.Course;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,9 +18,9 @@ import com.pi.cours.services.CourseService;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.ParseException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +66,22 @@ public class CourseController {
         }
     }
 
+    @GetMapping("/{id}/videos/{filename}")
+    public ResponseEntity<org.springframework.core.io.Resource> serveVideo(@PathVariable Long id, @PathVariable String filename) {
+        Path filePath = Paths.get("D:\\ArcTic2\\piCloudAngularfinal\\uploads", filename);
+        try {
+            Resource video = new UrlResource(filePath.toUri());
+            if (video.exists() || video.isReadable()) {
+                return ResponseEntity.ok().contentType(MediaType.parseMediaType("video/mp4"))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + video.getFilename() + "\"")
+                        .body(video);
+            } else {
+                throw new RuntimeException("Could not read file: " + filename);
+            }
+        } catch (MalformedURLException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteCourse(@PathVariable Long id) {
@@ -111,6 +129,7 @@ public class CourseController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
 
 

@@ -26,6 +26,10 @@ public class Course {
     private Integer userId;
     private BigDecimal price;
     private Integer rate;
+    // In your Course model
+    private Double averageCompletionTime; // average time in hours to complete the course
+    private Integer enrollmentCount; // number of enrolled students
+
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Video> videos = new ArrayList<>();
